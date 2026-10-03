@@ -1,0 +1,7 @@
+
+*.pyc
+.validation/
+*.zip
+downloads/
+.vscode/settings.json
+core/preferences.json
