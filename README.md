@@ -1,125 +1,65 @@
-# Avatar Toolkit
-This private compatibility fork (0.5.7) targets Blender 5.2.2 LTS.
-Install `avatar_toolkit-0.5.7.zip` through **Edit > Preferences > Get Extensions > Install from Disk**.
-Restart Blender after replacing an older copy.
+# Avatar Toolkit for Blender 5.2
 
-Compatibility checks run in Blender 5.2.2 include repeated registration and cleanup,
-PMX mesh/armature/material import, VMD bone/IK/camera/light animation, NLA slots,
-camera baking, MMD shader conversion, STL import, and FBX/glTF export.
-Pose mode and shape-key-to-basis geometry checks also pass. The packaged Windows
-LZ4 wheel passes a compression/decompression check inside Blender's Python 3.13.
-Bundled LZ4 binaries have been replaced with genuine Python 3.13 wheels from
-[PyPI](https://pypi.org/project/lz4/4.4.5/); macOS and Linux binaries were inspected
-for matching ABI tags but were not executed on those platforms.
-The VMD parser was restored from the GPL-licensed
-[MMD Tools project](https://github.com/MMD-Blender/blender_mmd_tools).
-PMD, VPD and MMD-format exports remain unsupported by this add-on.
-VRM, Source, 3DS and X3D imports require their respective external importers.
+A maintained fork of Avatar Toolkit for preparing avatars for VRChat, Resonite, and similar platforms. This fork contains Blender 5.2 compatibility fixes and downloads updates from this repository.
 
-To rerun the compatibility checks:
-```powershell
-& 'E:\SteamLibrary\steamapps\common\Blender\blender.exe' --background --factory-startup --python-exit-code 1 --python tests/blender_compatibility.py
-```
+**Current release:** 0.5.7
 
-We are aware the wiki is down and are working on a new one, please don't report this.
-
-## Avatar Toolkit is in Alpha, There will be issues, please ensure you report them!. If using a Alpha plugin isn't your fancy you can find Cats Blender Plugin [HERE](https://github.com/unofficalcats/Cats-Blender-Plugin-Unofficial-)!
-#### Avatar Toolkit is in Alpha and will contain issues, please ensure you report them!
-
-Avatar Toolkit is a modern, Blender addon designed to streamline the process of preparing 3D avatars for virtual platforms including VRChat, ChilloutVR, Resonite, and other similar applications.
-
-
-Updates now come from [Fynn9563/Avatar-Toolkit-Blender-5.2](https://github.com/Fynn9563/Avatar-Toolkit-Blender-5.2), a private repository.
-Install GitHub CLI, run `gh auth login`, and use a GitHub account with access to this repository.
-Alternatively, start Blender with a `GH_TOKEN` or `GITHUB_TOKEN` environment variable with read access to the repository.
-Enable Blender **Online Access** in Preferences. Credentials are read at runtime and are never stored in the add-on or archive.
-The updater downloads the matching extension ZIP from a stable 0.5.x GitHub release, validates the package, and restores replaced files if installation fails.
-Both **Update to Latest** and the selected-version button use this private repository. Restart Blender after an update.
-
-Run the broader feature tests with:
-```powershell
-& 'E:\SteamLibrary\steamapps\common\Blender\blender.exe' --background --factory-startup --python-exit-code 1 --python tests/blender_extended_suite.py
-```
-Tests create synthetic scenes and write fixtures into `.validation`; use `--factory-startup` to isolate them from your saved startup scene.
-See [TEST_REPORT.md](TEST_REPORT.md) for results and explicit coverage limits.
-
-
-# No longer maintained, neoneko has ceased all operations. 
-
-## What is Avatar Toolkit?
-Avatar Toolkit simplifies the workflow for avatar creation and optimization by providing an all-in-one solution that:
-- Automates complex optimization processes like mesh joining and vertex merging.
-- Provides advanced tools for eye tracking setup and viseme configuration.
-- Offers specialized armature utilities including bone name conversion for different platforms.
-- Includes performance-focused optimization tools so you can optimize your avatar for platforms like VRChat and ChilloutVR.
-
-The addon is built with a focus on user experience, reducing the number of steps needed to prepare avatars while offering powerful customization options for advanced users. Avatar Toolkit aims to be a complete replacement for Cats Blender Plugin and its unofficial variants, with a modern codebase designed specifically for current Blender versions and minimal dependencies on third-party plugins.
-
-Join the Neoneko Discord here: https://discord.neoneko.xyz
-
-Need a more stable toolset while Avatar Toolkit is in Alpha? Then please use Blender 4.x and use our Unofficial Cats Blender Plugin which you can find [here](https://github.com/unofficalcats/Cats-Blender-Plugin-Unofficial-).
-
-### Support us:
-If you like what we do and want to help support the development of cats you can do it on our pally.gg [here](https://pally.gg/p/teamneoneko) all money is split automatically between all developers and any support is appreciated.
-
-## Blender version support policies. 
-
-You can find them on the wiki here [HERE](https://avatartoolkit.xyz/legacywiki.html?version=0.2.1#what-is-avatar-toolkits-version-support-policy)
-
-## Features 
-
-See everything Avatar Toolkit has ot offer [here](https://avatartoolkit.xyz/legacywiki.html)
-
-## Requirements
-
-1) Blender Version
-- Blender 5.0 or newer is required
-- Blender 5.2.2 LTS is the recommended version for this update
-
-2) Python Requirements
-- If using a custom Python installation with Blender, ensure NumPy is installed
-- Default Blender installation includes all required packages
-
-3) Recommended Setup
-- Download Blender directly from https://blender.org
-- Use Blender 5.2.2 LTS for the best experience
-
-#### Unfortunately, due to the increased number of people complaining to me (yes, we get DMs about this) that AT or CATS is broken when it's not, we are going to have to be a bit more strict about which Blender releases we will provide support for.
-
-#### We only support the following Blender releases:
-- Steam release
-- The Blender website releases (there are downloads for Linux, Mac, and Windows)
-
-#### We do not support the following what so ever and we will not give help if your running the following.
-- We do not support the Windows Store due to it causing issues, and we also don't support the Snap Store for Linux.
-- We do not support package manager releases on Linux. This is because package managers are normally run by the distro, and a lot of the time the distro will build Blender themselves and make their own changes which are not sanctioned by Blender (for example, bundling a newer version of Python which tends to break plugins). If you report a bug from anything apart from the Blender versions we support, you will be told we can't help you from now on.
-
-#### Additional Plugins Requirements.
-Currently None.
+**Tested runtime:** Blender 5.2.2 LTS on Windows, Python 3.13.13
 
 ## Installation
-You can find out how to install Avatar Toolkit [here](https://avatartoolkit.xyz/legacywiki.html?version=0.2.0#how-to-install-avatar-toolkit)
 
-## Help
+1. Open [Releases](https://github.com/Fynn9563/Avatar-Toolkit-Blender-5.2/releases) and download `avatar_toolkit-0.5.7.zip` from the release assets. Use the extension ZIP rather than GitHub's source-code ZIP.
+2. In Blender, open **Edit > Preferences > Get Extensions** and choose **Install from Disk** from the menu.
+3. Select the ZIP, enable Avatar Toolkit, and restart Blender if replacing an older installation.
+4. Open the **Avatar Toolkit** tab in the 3D Viewport sidebar (`N`).
 
-If you need help with Avatar Toolkit you can check the wiki (Coming soon).
+The package includes LZ4 dependency wheels for Blender's Python 3.13. NumPy is supplied by the tested Blender installation; no separate Python setup is needed for that installation.
 
-## Acknowledgements
+The manifest accepts Blender **5.0.0 up to, but excluding, 5.3.0**. Execution testing was performed on **5.2.2 LTS for Windows**. Other Blender versions and macOS/Linux runtimes have not been verified by these tests.
 
-Avatar Toolkit is partly based on some code from Cats Blender Plugin and Cats Blender Plugin Unofficial, therefore we want to acknowledge the following people:
+## Updates
 
-### Cats Code contributors:
-- absolute quantum
-- Hotox
-- Shotariya
-- Neitri
-- Kiraver
-- Jordo
-- Ruubick
-- Mysteryem
-- 989onan
-- Yusarina
+Releases are published in [this repository](https://github.com/Fynn9563/Avatar-Toolkit-Blender-5.2/releases). Download the extension ZIP from the release assets and install it through Blender's **Install from Disk** menu. Restart Blender after replacing an older version.
 
-## Feedback
+UI version labels read the package manifest. For the current test results and update-path coverage, see [TEST_REPORT.md](TEST_REPORT.md).
 
-Please open an issue if you need to leave feedback.
+## Features
+
+- Mesh joining, separation, attachment, transforms, and shape-key utilities.
+- Viseme generation, eye tracking, and blink/lowerlid setup.
+- Armature validation, bone cleanup and merging, digitigrade conversion, and pose tools.
+- Rigify, VRM, and Resonite bone conversion.
+- Material consolidation, texture atlases, UV alignment, and seam tools.
+- Offline dictionary translation, with optional external translation services.
+- PMX models, VMD animation, STL import, and Blender FBX/glTF export workflows.
+- Resonite AnimX animation import, including raw, LZ4, and LZMA encodings.
+
+**Integration limits:** VRM, Source, 3DS, and X3D file imports require their respective external importers. VRM bone conversion is a separate tool included in this fork. DeepL/LibreTranslate services require their own credentials or configured server. PMD/VPD import and MMD-format export remain unsupported.
+
+## Testing
+
+Version 0.5.7 passed **44 automated feature scenarios**, the compatibility suite, and Blender extension build/validation checks. Across the feature and compatibility suites, **61 distinct add-on operators** were executed. All **160 registered operators** passed polling checks across multiple contexts. The release download and isolated update installation checks also passed.
+
+These checks do not establish exhaustive coverage of every function or input. Interactive dialogs, production avatars, real-time viewport behavior, live translation services, third-party importers, and some bundled MMD editing tools still need manual or external integration testing. See [TEST_REPORT.md](TEST_REPORT.md) and the [operator coverage inventory](tests/operator_coverage.json) for details.
+
+Run from the repository root with your Blender executable:
+
+```powershell
+$blenderPath = 'E:\SteamLibrary\steamapps\common\Blender\blender.exe'
+& $blenderPath --background --factory-startup --python-exit-code 1 --python tests/blender_extended_suite.py
+& $blenderPath --background --factory-startup --python-exit-code 1 --python tests/blender_compatibility.py
+```
+
+Tests create synthetic scenes and write fixtures/results into `.validation/`. Use `--factory-startup` to isolate them from your saved startup scene. Package checks and build commands are documented in [TEST_REPORT.md](TEST_REPORT.md).
+
+## Issues
+
+Report problems in [this repository's issue tracker](https://github.com/Fynn9563/Avatar-Toolkit-Blender-5.2/issues). Include the add-on version, Blender version, operating system, reproduction steps, and any traceback. Include a small reproduction file when possible.
+
+## License and acknowledgements
+
+Licensed under **GPL-3.0-or-later**; see [LICENSE](LICENSE).
+
+This fork builds on [Avatar Toolkit](https://github.com/teamneoneko/Avatar-Toolkit) and code from Cats Blender Plugin and its unofficial variants. The restored VMD parser comes from the GPL-licensed [MMD Tools project](https://github.com/MMD-Blender/blender_mmd_tools). Bundled LZ4 wheels are version 4.4.5.
+
+Acknowledged Cats contributors: absolute quantum, Hotox, Shotariya, Neitri, Kiraver, Jordo, Ruubick, Mysteryem, 989onan, and Yusarina.
