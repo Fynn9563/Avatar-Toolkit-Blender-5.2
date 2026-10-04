@@ -318,7 +318,7 @@ class AvatarToolKit_OT_FlipCurrentKeyFrames(Operator):
             return False
         if context.mode != 'POSE':
             return False
-        if not armature.animation_data:
+        if not armature.animation_data or not armature.animation_data.action:
             return False
         valid, _, _ = validate_armature(armature)
         return valid
@@ -343,9 +343,9 @@ class AvatarToolKit_OT_FlipCurrentKeyFrames(Operator):
         
         #save our selection
         selected: list[bool] = [False] * len(armature_data.bones)
-        armature_data.bones.foreach_get("select", selected) 
+        armature.pose.bones.foreach_get("select", selected)
         #select everything
-        armature_data.bones.foreach_set("select", [False] * len(armature_data.bones)) 
+        armature.pose.bones.foreach_set("select", [False] * len(armature_data.bones))
 
 
         # Get channelbag for the action using Blender 5.0 API
@@ -367,9 +367,9 @@ class AvatarToolKit_OT_FlipCurrentKeyFrames(Operator):
 
         for time,curves in times.items():
             context.scene.frame_set(frame=int(time), subframe=float(time-float(int(time))))
-            armature_data.bones.foreach_set("select", [True] * len(armature_data.bones)) 
+            armature.pose.bones.foreach_set("select", [True] * len(armature_data.bones))
             bpy.ops.pose.copy()
-            armature_data.bones.foreach_set("select", [False] * len(armature_data.bones)) 
+            armature.pose.bones.foreach_set("select", [False] * len(armature_data.bones))
             bpy.ops.pose.paste(flipped=True,selected_mask=False)
             
 
@@ -380,7 +380,7 @@ class AvatarToolKit_OT_FlipCurrentKeyFrames(Operator):
                 bone_name: str = curve.data_path.replace("pose.bones[\"","")
                 bone_name = bone_name[:bone_name.index("\"")]
                 
-                armature_data.bones[bone_name].select = True
+                armature.pose.bones[bone_name].select = True
 
                 bpy.ops.pose.select_mirror(extend=False)
 
@@ -412,6 +412,6 @@ class AvatarToolKit_OT_FlipCurrentKeyFrames(Operator):
         #    armature_data.bones[standard].name = bone_name
 
         # restore selection
-        armature_data.bones.foreach_set("select", selected) 
+        armature.pose.bones.foreach_set("select", selected)
         restore_breaking_settings_armature(armature, data_breaking)
         return {'FINISHED'}

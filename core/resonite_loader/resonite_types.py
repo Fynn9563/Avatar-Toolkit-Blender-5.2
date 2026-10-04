@@ -1,3 +1,4 @@
+import builtins
 import typing
 from io import BytesIO
 import struct
@@ -19,14 +20,14 @@ class ResoType():
 
 def writeNullable(data: BytesIO, value: ResoType = None):
 
-    data.write(struct.pack("?", value == None))
+    data.write(struct.pack("?", value is not None))
     if(value == None):
         return
     value.write(data)
 
 def readNullable(data: BytesIO, value: ResoType = None):
 
-    hasval: bool = struct.unpack("?", data.read(1))
+    hasval: bool = struct.unpack("?", data.read(1))[0]
     if not hasval:
         return
     value.read(data)
@@ -46,7 +47,7 @@ class color(ResoType):
         data.write(struct.pack("<ffff", self.r, self.g, self.b, self.a))
         
     def read(self,data):
-        self.r, self.g, self.b, self.a = struct.unpack("<ffff", data.read(4*4))[0]
+        self.r, self.g, self.b, self.a = struct.unpack("<ffff", data.read(4*4))
 
 
 class color32(ResoType):
@@ -63,7 +64,7 @@ class color32(ResoType):
         data.write(struct.pack("<BBBB", self.r, self.g, self.b, self.a))
         
     def read(self,data):
-        self.r, self.g, self.b, self.a = struct.unpack("<BBBB", data.read(4))[0]
+        self.r, self.g, self.b, self.a = struct.unpack("<BBBB", data.read(4))
 
 class string(ResoType):
     x: str
@@ -164,12 +165,12 @@ class bool2(bool):
         pass
 
     def read(self,data: BytesIO):
-        byte: int = int(struct.unpack("<B",data.read(1))[0])
+        byte: int = builtins.int(struct.unpack("<B",data.read(1))[0])
         self.x = (byte & 1) > 0
         self.y = (byte & 2) > 0
 
     def createflags(self) -> int:
-        flags: int = int(0)
+        flags: int = builtins.int(0)
         flags |= (1 if self.x else 0)
         flags |= (2 if self.y else 0)
         return flags
@@ -185,16 +186,16 @@ class bool3(bool2):
         pass
 
     def read(self,data):
-        byte: int = int(struct.unpack("<B",data.read(1))[0])
+        byte: int = builtins.int(struct.unpack("<B",data.read(1))[0])
         self.x = (byte & 1) > 0
         self.y = (byte & 2) > 0
         self.z = (byte & 4) > 0
 
     def createflags(self) -> int:
-        flags: int = int(0)
+        flags: int = builtins.int(0)
         flags |= (1 if self.x else 0)
         flags |= (2 if self.y else 0)
-        flags |= (3 if self.z else 0)
+        flags |= (4 if self.z else 0)
         return flags
     
     def write(self, data: BytesIO):
@@ -208,14 +209,14 @@ class bool4(bool3):
         pass
 
     def read(self,data: BytesIO):
-        byte: int = int(struct.unpack("<B",data.read(1))[0])
+        byte: int = builtins.int(struct.unpack("<B",data.read(1))[0])
         self.x = (byte & 1) > 0
         self.y = (byte & 2) > 0
         self.z = (byte & 4) > 0
         self.w = (byte & 8) > 0
 
     def createflags(self) -> int:
-        flags: int = int(0)
+        flags: int = builtins.int(0)
         flags |= (1 if self.x else 0)
         flags |= (2 if self.y else 0)
         flags |= (4 if self.z else 0)
@@ -249,7 +250,7 @@ class int2(int):
         pass
 
     def read(self,data: BytesIO):
-        super().write(data)
+        super().read(data)
         self.y = struct.unpack("<i", data.read(4))[0]
     
     def write(self, data: BytesIO):
@@ -263,7 +264,7 @@ class int3(int2):
         pass
 
     def read(self,data: BytesIO):
-        super().write(data)
+        super().read(data)
         self.z = struct.unpack("<i", data.read(4))[0]
     
     def write(self, data: BytesIO):
@@ -507,6 +508,8 @@ class double2x2(ResoType):
 class double3x3(double2x2):
     m02: float = 0
     m12: float = 0
+    m20: float = 0
+    m21: float = 0
     m22: float = 0
 
     def __init__(self):
@@ -523,6 +526,9 @@ class double4x4(double3x3):
     m03: float = 0
     m13: float = 0
     m23: float = 0
+    m30: float = 0
+    m31: float = 0
+    m32: float = 0
     m33: float = 0
 
     def __init__(self):
@@ -626,6 +632,8 @@ class float2x2(ResoType):
 class float3x3(float2x2):
     m02: float = 0
     m12: float = 0
+    m20: float = 0
+    m21: float = 0
     m22: float = 0
 
     def __init__(self):
@@ -642,6 +650,9 @@ class float4x4(float3x3):
     m03: float = 0
     m13: float = 0
     m23: float = 0
+    m30: float = 0
+    m31: float = 0
+    m32: float = 0
     m33: float = 0
 
     def __init__(self):

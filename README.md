@@ -1,6 +1,6 @@
 # Avatar Toolkit
-This local compatibility update (0.5.5) targets Blender 5.2.2 LTS.
-Install `avatar_toolkit-0.5.5.zip` through **Edit > Preferences > Get Extensions > Install from Disk**.
+This private compatibility fork (0.5.6) targets Blender 5.2.2 LTS.
+Install `avatar_toolkit-0.5.6.zip` through **Edit > Preferences > Get Extensions > Install from Disk**.
 Restart Blender after replacing an older copy.
 
 Compatibility checks run in Blender 5.2.2 include repeated registration and cleanup,
@@ -27,6 +27,22 @@ We are aware the wiki is down and are working on a new one, please don't report 
 #### Avatar Toolkit is in Alpha and will contain issues, please ensure you report them!
 
 Avatar Toolkit is a modern, Blender addon designed to streamline the process of preparing 3D avatars for virtual platforms including VRChat, ChilloutVR, Resonite, and other similar applications.
+
+
+Updates now come from [Fynn9563/Avatar-Toolkit-Blender-5.2](https://github.com/Fynn9563/Avatar-Toolkit-Blender-5.2), a private repository.
+Install GitHub CLI, run `gh auth login`, and use a GitHub account with access to this repository.
+Alternatively, start Blender with a `GH_TOKEN` or `GITHUB_TOKEN` environment variable with read access to the repository.
+Enable Blender **Online Access** in Preferences. Credentials are read at runtime and are never stored in the add-on or archive.
+The updater downloads the matching extension ZIP from a stable 0.5.x GitHub release, validates the package, and restores replaced files if installation fails.
+Both **Update to Latest** and the selected-version button use this private repository. Restart Blender after an update.
+
+Run the broader feature tests with:
+```powershell
+& 'E:\SteamLibrary\steamapps\common\Blender\blender.exe' --background --factory-startup --python-exit-code 1 --python tests/blender_extended_suite.py
+```
+Tests create synthetic scenes and write fixtures into `.validation`; use `--factory-startup` to isolate them from your saved startup scene.
+See [TEST_REPORT.md](TEST_REPORT.md) for results and explicit coverage limits.
+
 
 # No longer maintained, neoneko has ceased all operations. 
 

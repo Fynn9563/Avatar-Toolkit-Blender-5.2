@@ -3,7 +3,7 @@
 schema_version = "1.0.0"
 
 id = "avatar_toolkit"
-version = "0.5.5"
+version = "0.5.6"
 name = "Avatar Toolkit"
 tagline = "Import and optimize avatars for VRChat and Resonite"
 
@@ -29,4 +29,4 @@ network = "For the auto updater to work, you need to allow network access"
 files = "Import/Export files, saving atlas images, saving preferences"
 
 [build]
-paths_exclude_pattern = [".validation/", "tests/", "__pycache__/", "*.pyc", "*.zip", ".git/", ".gitignore"]
+paths_exclude_pattern = [".validation/", "tests/", "__pycache__/", "*.pyc", "*.zip", ".git/", ".gitignore", ".github/"]

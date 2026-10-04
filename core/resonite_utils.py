@@ -158,7 +158,9 @@ class AvatarToolKit_OT_AnimX_Importer(Operator,bpy_extras.io_utils.ImportHelper)
         for file in files:
             froox_animation: resonite_animx.AnimX = resonite_animx.AnimX()
             froox_animation.interval.x = 30 #should be default fps
-            froox_animation.read(file=file)
+            if not froox_animation.read(file=file):
+                self.report({'ERROR'}, 'Invalid AnimX file')
+                return {'CANCELLED'}
             Froox_animations.append(froox_animation)
 
         #TODO: Allow multiple targets and setting animations to each one somehow with an interface.
@@ -185,86 +187,52 @@ class AvatarToolKit_OT_AnimX_Importer(Operator,bpy_extras.io_utils.ImportHelper)
                 data_path = actualproperty
 
                 if target.type == "ARMATURE":
-                    data_path = "pose.bones[\""+track.node.x+"\"]."+data_path
+                    bone = target.pose.bones.get(track.node.x)
+                    if bone is None:
+                        raise ValueError(f"AnimX bone not found: {track.node.x}")
+                    data_path = bone.path_from_id(actualproperty)
 
                     for posebone in target.pose.bones:
                         posebone.rotation_mode = "QUATERNION"
 
                 print("reading frames for "+data_path)
-                if(track.FrameType == "resonite_types.double" or track.FrameType == "resonite_types.double"):
-                    self.readTrackData(track,makeorexistingfcurve(action=action,data_path=data_path,action_group=track.node.x,index=0),".x")
-                elif (track.FrameType == "resonite_types.float3" or track.FrameType == "resonite_types.double3"):
-                    self.readTrackData(track,makeorexistingfcurve(action=action,data_path=data_path,action_group=track.node.x,index=0),".x")
-                    self.readTrackData(track,makeorexistingfcurve(action=action,data_path=data_path,action_group=track.node.x,index=2),".y")
-                    self.readTrackData(track,makeorexistingfcurve(action=action,data_path=data_path,action_group=track.node.x,index=1),".z")
-                elif (track.FrameType == "resonite_types.float4" or track.FrameType == "resonite_types.double4"):
-                    self.readTrackData(track,makeorexistingfcurve(action=action,data_path=data_path,action_group=track.node.x,index=0),".x")
-                    self.readTrackData(track,makeorexistingfcurve(action=action,data_path=data_path,action_group=track.node.x,index=1),".y")
-                    self.readTrackData(track,makeorexistingfcurve(action=action,data_path=data_path,action_group=track.node.x,index=2),".z")
-                    self.readTrackData(track,makeorexistingfcurve(action=action,data_path=data_path,action_group=track.node.x,index=3),".w")
-                elif (track.FrameType == "resonite_types.doubleQ" or track.FrameType == "resonite_types.floatQ"):
-                    self.readTrackData(track,makeorexistingfcurve(action=action,data_path=data_path,action_group=track.node.x,index=3),".w")
-                    self.readTrackData(track,makeorexistingfcurve(action=action,data_path=data_path,action_group=track.node.x,index=0),".x")
-                    self.readTrackData(track,makeorexistingfcurve(action=action,data_path=data_path,action_group=track.node.x,index=2),".y")
-                    self.readTrackData(track,makeorexistingfcurve(action=action,data_path=data_path,action_group=track.node.x,index=1),".z")
+                value_type = track.FrameType.split('.')[-1]
+                if value_type in ('float', 'double'):
+                    components = [('x', 0, 1)]
+                elif value_type in ('float3', 'double3'):
+                    components = [('x', 0, 1), ('y', 2, 1), ('z', 1, 1)]
+                elif value_type in ('floatQ', 'doubleQ') or (
+                        value_type in ('float4', 'double4') and actualproperty == 'rotation_quaternion'):
+                    # Swapping Y/Z is a reflection: quaternion vector part changes sign.
+                    components = [('w', 0, 1), ('x', 1, -1), ('y', 3, -1), ('z', 2, -1)]
+                elif value_type in ('float4', 'double4'):
+                    components = [('x', 0, 1), ('y', 1, 1), ('z', 2, 1), ('w', 3, 1)]
                 else:
                     continue
+                for component, index, factor in components:
+                    curve = makeorexistingfcurve(action, data_path, track.node.x, index, target)
+                    self.readTrackData(track, curve, component, factor)
         return {'FINISHED'}
 
-    def readTrackData(self,track: resonite_animx.ResoTrack, fcurve_reso: bpy.types.FCurve, valuetype: str = ""):
-        tracktype = type(track)
-        match(tracktype):
-            case (resonite_animx.RawTrack):
-                rawtrack: resonite_animx.RawTrack = track
-
-                
-                
-                fcurve_reso.keyframe_points.add(count=len(rawtrack.keyframes))
-                # populate points
-                fcurve_reso.keyframe_points.foreach_set("co", [x for co in zip([frame.time.x*track.Owner.interval.x for frame in rawtrack.keyframes], [eval("frame.value"+valuetype) for frame in rawtrack.keyframes]) for x in co])
-                fcurve_reso.update()
-
-            case (resonite_animx.DiscreteTrack):
-                discretetrack: resonite_animx.DiscreteTrack = track
-
-                fcurve_reso.keyframe_points.add(count=len(discretetrack.keyframes))
-                # populate points
-                fcurve_reso.keyframe_points.foreach_set("co", [x for co in zip([frame.time.x*track.Owner.interval.x for frame in discretetrack.keyframes], [eval("frame.value"+valuetype) for frame in discretetrack.keyframes]) for x in co])
-                fcurve_reso.update()
-
-            case(resonite_animx.CurveTrack):
-                curvetrack: resonite_animx.CurveTrack = track
-
-                fcurve_reso.keyframe_points.add(count=len(curvetrack.keyframes))
-                # populate points
-                fcurve_reso.keyframe_points.foreach_set("co", [x for co in zip([frame.time.x*track.Owner.interval.x for frame in curvetrack.keyframes], [eval("frame.value"+valuetype) for frame in curvetrack.keyframes]) for x in co])
-                interp: bool = curvetrack.tangents
-                #print("has tangents? "+str(interp))
-
-                for idx,frame in enumerate(curvetrack.keyframes):
-                    
-                    if interp:
-                        fcurve_reso.keyframe_points[idx].handle_left = float(eval("frame.left_tan"+valuetype))
-                        fcurve_reso.keyframe_points[idx].handle_right = float(eval("frame.right_tan"+valuetype))
-                    fcurve_reso.keyframe_points[idx].interpolation = "BEZIER"
-                    fcurve_reso.keyframe_points[idx].easing = "EASE_IN"
-                fcurve_reso.update()
-
-            case(resonite_animx.BezierTrack):
-                beziertrack: resonite_animx.BezierTrack = track
-                # Bezier is not supported rn, ignore.
-            case _:
-                print("invalid track type, ignoring")
-                print(track)
-
-
-
-        
-    
-
-    
-
-
-
-    
-
+    def readTrackData(self, track, fcurve_reso, valuetype="", factor=1):
+        fps = bpy.context.scene.render.fps / bpy.context.scene.render.fps_base
+        component = valuetype.lstrip('.')
+        frames = track.keyframes
+        for i, frame in enumerate(frames):
+            seconds = i * track.interval.x if isinstance(track, resonite_animx.RawTrack) else frame.time.x
+            value = getattr(frame.value, component) * factor
+            point = fcurve_reso.keyframe_points.insert(seconds * fps, value)
+            if isinstance(track, resonite_animx.DiscreteTrack):
+                point.interpolation = 'CONSTANT'
+            elif isinstance(track, resonite_animx.CurveTrack):
+                point.interpolation = 'CONSTANT' if frame.interpolation.x == 0 else 'LINEAR'
+                if track.tangents and frame.RequiresTangents():
+                    point.interpolation = 'BEZIER'
+                    point.handle_left_type = point.handle_right_type = 'FREE'
+                    before = seconds - frames[i-1].time.x if i else 1 / fps
+                    after = frames[i+1].time.x - seconds if i+1 < len(frames) else 1 / fps
+                    point.handle_left = (seconds*fps - before*fps/3, value - getattr(frame.left_tan, component)*factor*before/3)
+                    point.handle_right = (seconds*fps + after*fps/3, value + getattr(frame.right_tan, component)*factor*after/3)
+            else:
+                point.interpolation = 'LINEAR'
+        fcurve_reso.update()

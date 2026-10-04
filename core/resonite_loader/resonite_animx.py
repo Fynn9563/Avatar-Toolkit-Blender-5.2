@@ -12,10 +12,10 @@ from io import BytesIO
 
 
 KeyframeInterpolation: dict[str, int] = {
-    "Hold": 1,
-    "Linear": 2,
-    "Tangent": 3,
-    "CubicBezier": 4
+    "Hold": 0,
+    "Linear": 1,
+    "Tangent": 2,
+    "CubicBezier": 3
 }
 
 class KeyFrame():
@@ -33,7 +33,7 @@ class KeyFrame():
     
 
     def RequiresTangents(self) -> bool:
-        if KeyframeInterpolation[self.interpolation.x] == "Tangent" or KeyframeInterpolation[self.interpolation.x] == "CubicBezier":
+        if self.interpolation.x in (2, 3):
             return True
         return False
 
@@ -56,6 +56,7 @@ class ResoTrack(resonite_types.ResoType):
         common.write7bitEncoded_ulong(data, len(self.keyframes))
 
     def read(self, data:BytesIO):
+        self.keyframes = []
         self.node.read(data)
         self.property.read(data)
 
@@ -63,7 +64,7 @@ class ResoTrack(resonite_types.ResoType):
         #print(track_amount)
         for i in range(0, track_amount):
             key: KeyFrame = KeyFrame()
-            key.value = eval(self.FrameType+"()")
+            key.value = getattr(resonite_types, self.FrameType.split(".")[-1])()
             self.keyframes.append(key)
 
     def removeKeyframe(self, time: float | int) -> bool:
@@ -85,6 +86,7 @@ class ResoTrack(resonite_types.ResoType):
             if (int(time) >= len(self.keyframes)):
                 raise IndexError("Keyframe time cannot be bigger than the amount of keyframes. Value: " + str(time))
             self.keyframes.remove(self.keyframes[int(time)])
+            return True
             
 
 
@@ -95,16 +97,12 @@ class ResoTrack(resonite_types.ResoType):
             raise IndexError("Keyframe time cannot be lower than 0. Value: " + str(keyframe.time.x))
         
 
-        num: int = 0
+        for index, existing in enumerate(self.keyframes):
+            if existing.time.x == keyframe.time.x:
+                self.keyframes[index] = keyframe
+                return True
+        return False
 
-        if (keyframe.time.x == self.keyframes[self.GetKeyframeIndex(keyframe.time.x)].time.x):
-            num = len(self.keyframes)
-        else:
-            return False
-
-        self.keyframes[num] = keyframe
-        return True
-    
     def addKeyframe(self, keyframe: KeyFrame) -> int:
         if (keyframe.time.x < 0):
             raise IndexError("Keyframe time cannot be lower than 0. Value: " + str(keyframe.time.x))
@@ -124,10 +122,10 @@ class ResoTrack(resonite_types.ResoType):
         if(type(time) == float):
             if (len(self.keyframes) > 0):
                 num: int = 0
-                if (self.keyframes[-1].time < float(time)):
+                if (self.keyframes[-1].time.x < float(time)):
                     num = len(self.keyframes)
                 
-                while (num < len(self.keyframes) and self.keyframes[num].time < time):
+                while (num < len(self.keyframes) and self.keyframes[num].time.x < time):
                     num += 1
                 
                 return num - 1
@@ -162,7 +160,8 @@ class RawTrack(ResoTrack):
     def read(self, data:BytesIO):
         super().read(data)
         self.interval.read(data)
-        for key in self.keyframes:
+        for index, key in enumerate(self.keyframes):
+            key.time.x = index * self.interval.x
             if self.FrameType == "resonite_types.string":
                 resonite_types.readNullable(data, key.value)
             else:
@@ -171,55 +170,35 @@ class RawTrack(ResoTrack):
     def addKeyframe(self, keyframe: KeyFrame) -> int:
         num: int = super().addKeyframe(keyframe)
         for i in range(0,len(self.keyframes)):
-            self.keyframes[i].time = i
+            self.keyframes[i].time.x = i * self.interval.x
         return num
     def removeKeyframe(self, time: float | int) -> bool:
         success: bool = super().removeKeyframe(int(time))
         for i in range(0,len(self.keyframes)):
-            self.keyframes[i].time = i
+            self.keyframes[i].time.x = i * self.interval.x
         return success
 
 
     
 
 class DiscreteTrack(ResoTrack):
-    
-    def __init__(self, FrameType):
-        super().__init__(FrameType)
-
-    def write(self, data: BytesIO):
+    def write(self, data):
         super().write(data)
-        self.interval.write(data)
         for key in self.keyframes:
-            if key.value == None:
-                key.value = eval(self.FrameType+"()")
-            if self.FrameType == "resonite_types.string":
-                    resonite_types.writeNullable(data, key.value)
+            key.time.write(data)
+            if self.FrameType == 'resonite_types.string':
+                resonite_types.writeNullable(data, key.value)
             else:
                 key.value.write(data)
-            key.time.write(data)
 
-
-    def read(self, data:BytesIO):
+    def read(self, data):
         super().read(data)
-        self.interval.read(data)
         for key in self.keyframes:
-            if key.value == None:
-                key.value = eval(self.FrameType+"()")
-            if self.FrameType == "resonite_types.string":
-                    resonite_types.readNullable(data, key.value)
+            key.time.read(data)
+            if self.FrameType == 'resonite_types.string':
+                resonite_types.readNullable(data, key.value)
             else:
                 key.value.read(data)
-            key.time.read(data)
-
-    def addKeyframe(self, keyframe: KeyFrame) -> int:
-        num: int = super().addKeyframe(keyframe)
-        return num
-    def removeKeyframe(self, time: float | int) -> bool:
-        success: bool = super().removeKeyframe(time)
-        return success
-        
-
 
 
 class CurveTrack(ResoTrack):
@@ -258,7 +237,7 @@ class CurveTrack(ResoTrack):
 
         for key in self.keyframes:
             if key.value == None:
-                key.value = eval(self.FrameType+"()")
+                key.value = getattr(resonite_types, self.FrameType.split(".")[-1])()
             if self.FrameType == "resonite_types.string":
                     resonite_types.writeNullable(data, key.value)
             else:
@@ -271,14 +250,15 @@ class CurveTrack(ResoTrack):
                     resonite_types.writeNullable(data, key.left_tan)
                     resonite_types.writeNullable(data, key.right_tan)
                 else:
-                    key.left_tan.write(data)
                     key.right_tan.write(data)
+                    key.left_tan.write(data)
 
     def read(self, data:BytesIO):
         super().read(data)
         flags: int = struct.unpack("<B",data.read(1))[0]
         interp: bool = (flags & 1) > 0
         tan: bool = (flags & 2) > 0
+        self.interpolations, self.tangents = interp, tan
 
         #print(str(interp))
         #print(str(tan))
@@ -291,10 +271,12 @@ class CurveTrack(ResoTrack):
                 key.interpolation.read(data)
         else:
             self.sharedinterpolation.read(data)
+            for key in self.keyframes:
+                key.interpolation.x = self.sharedinterpolation.x
         
         for key in self.keyframes:
             if key.value == None:
-                key.value = eval(self.FrameType+"()")
+                key.value = getattr(resonite_types, self.FrameType.split(".")[-1])()
             if self.FrameType == "resonite_types.string":
                 resonite_types.readNullable(data, key.value)
             else:
@@ -307,8 +289,10 @@ class CurveTrack(ResoTrack):
                     resonite_types.readNullable(data, key.left_tan)
                     resonite_types.readNullable(data, key.right_tan)
                 else:
-                    key.left_tan.read(data)
+                    key.right_tan = getattr(resonite_types, self.FrameType.split(".")[-1])()
+                    key.left_tan = getattr(resonite_types, self.FrameType.split(".")[-1])()
                     key.right_tan.read(data)
+                    key.left_tan.read(data)
         
 
 
@@ -424,7 +408,7 @@ class AnimX():
 
     def __init__(self):
         self.tracks = []
-        self.file_version = resonite_types.int()
+        self.file_version = resonite_types.byte()
         self.track_amount = resonite_types.int()
         self.global_duration = resonite_types.float()
         self.name = resonite_types.string()
@@ -461,6 +445,7 @@ class AnimX():
             if magic_word != 'AnimX':
                 print("AnimX != "+magic_word)
                 return False
+            self.tracks = []
             self.file_version.read(data)
             if self.file_version.x > 1:
                 raise Exception("AnimX version is higher than the supported one")
@@ -505,7 +490,7 @@ class AnimX():
             for i in range(0,self.track_amount.x):
                 trackType2: int = 0
                 num4: int = 0
-                if (self.file_version == 0):
+                if (self.file_version.x == 0):
                     b: int = int(struct.unpack('<B', data.read(1))[0])
                     num3: int = int(b & 1)
                     trackType: int = 0
@@ -524,8 +509,8 @@ class AnimX():
                     animationTrack = AnimX.GetTrackType(trackType2, elementTypes[num4], data)
                     animationTrack.Owner = self
                     self.tracks.append(animationTrack)
-                except:
-                    raise Exception("[InvalidDataException]: element type exception, beyond range: "+str(num4))
+                except (IndexError, KeyError) as exc:
+                    raise ValueError("Invalid AnimX track or element type") from exc
 
         return True
 
@@ -533,14 +518,14 @@ class AnimX():
         """
         Takes an absolute file path and writes a binary animx file into it's contents, replacing them using this class's data.
         """
-        with open(file, 'rb') as filecontents:
-            data: BytesIO = BytesIO(filecontents)
+        with open(file, 'wb') as filecontents:
+            data: BytesIO = BytesIO()
             common.WriteCSharp_str(data, 'AnimX')
             self.file_version.x = most_recent_AnimX_vers #we wanna write an up to date file version type.
             self.file_version.write(data)
             
             self.track_amount.x = len(self.tracks)
-            common.write7bitEncoded_ulong(self.track_amount.x)
+            common.write7bitEncoded_ulong(data, self.track_amount.x)
             self.global_duration.write(data)
 
 
@@ -551,9 +536,10 @@ class AnimX():
             
             for i in range(0,self.track_amount.x):
 
-                data.write(struct.pack('<B', TrackTypes.index(type(self.tracks[i]))))
+                data.write(struct.pack('<B', TrackTypes.index(type(self.tracks[i]).__name__)))
                 data.write(struct.pack('<B', elementTypes.index(self.tracks[i].FrameType)))
                 self.tracks[i].write(data)
+            filecontents.write(data.getvalue())
 
         return True
 

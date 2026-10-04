@@ -176,8 +176,8 @@ class CreateEyesSDK2Button(bpy.types.Operator):
                     self.mesh.select_set(True)
                     context.view_layer.objects.active = self.mesh
                     
-                    copy_vertex_group(self, old_eye_left.name, 'LeftEye')
-                    copy_vertex_group(self, old_eye_right.name, 'RightEye')
+                    copy_vertex_group(self, toolkit.eye_left, 'LeftEye')
+                    copy_vertex_group(self, toolkit.eye_right, 'RightEye')
                     
                     # Return to armature edit mode
                     context.view_layer.objects.active = armature
@@ -189,6 +189,11 @@ class CreateEyesSDK2Button(bpy.types.Operator):
                              toolkit.lowerlid_left, toolkit.lowerlid_right]
                     new_shapes = ['vrc.blink_left', 'vrc.blink_right',
                                 'vrc.lowerlid_left', 'vrc.lowerlid_right']
+                    bpy.ops.object.mode_set(mode='OBJECT')
+                    for index, shape in enumerate(shapes, start=1):
+                        if shape not in self.mesh.data.shape_keys.key_blocks:
+                            raise ValueError(f"Shape key not found: {shape}")
+                        copy_shape_key(self, context, shape, new_shapes, index)
 
                 progress.step("Finalizing setup")
                 bpy.ops.object.mode_set(mode='OBJECT')
@@ -341,10 +346,10 @@ class StartTestingButton(bpy.types.Operator):
             shape_key.value = 0
 
         # Clear transforms
-        for pb in armature.data.bones:
+        for pb in armature.pose.bones:
             pb.select = True
         bpy.ops.pose.transforms_clear()
-        for pb in armature.data.bones:
+        for pb in armature.pose.bones:
             pb.select = False
             pb.hide = True
 
@@ -376,11 +381,11 @@ class StopTestingButton(bpy.types.Operator):
             bpy.ops.object.mode_set(mode='POSE')
 
         armature = get_active_armature(context)
-        for pb in armature.data.bones:
+        for pb in armature.pose.bones:
             pb.hide = False
             pb.select = True
         bpy.ops.pose.transforms_clear()
-        for pb in armature.data.bones:
+        for pb in armature.pose.bones:
             pb.select = False
 
         mesh = bpy.data.objects[toolkit.mesh_name_eye]
@@ -969,7 +974,7 @@ def stop_testing(context: Context) -> None:
     context.scene.avatar_toolkit.eye_rotation_y = 0
     
     # Clear transforms
-    for bone in armature.data.bones:
+    for bone in armature.pose.bones:
         bone.hide = False
         bone.select = True
     bpy.ops.pose.transforms_clear()

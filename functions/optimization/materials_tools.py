@@ -27,8 +27,8 @@ def textures_match(tex1: ShaderNodeTexImage, tex2: ShaderNodeTexImage) -> bool:
 
 def consolidate_nodes(node1: ShaderNodeTexImage, node2: ShaderNodeTexImage) -> None:
     """Transfer properties from one texture node to another to ensure consistency"""
-    node2.color_space = node1.color_space
-    node2.coordinates = node1.coordinates
+    node2.interpolation = node1.interpolation
+    node2.projection = node1.projection
     # Add UV map synchronization
     if node1.texture_mapping and node2.texture_mapping:
         node2.texture_mapping.vector_type = node1.texture_mapping.vector_type
@@ -44,8 +44,9 @@ def consolidate_textures(node_tree1: NodeTree, node_tree2: NodeTree) -> None:
                     consolidate_nodes(node1, node2)
                     node2.image = node1.image
         elif node1.type == 'GROUP':
-            if node1.node_tree and node2.node_tree:
-                consolidate_textures(node1.node_tree, node2.node_tree)
+            for node2 in node_tree2.nodes:
+                if node2.type == 'GROUP' and node1.node_tree == node2.node_tree:
+                    break
 
 def color_match(col1: Tuple[float, ...], col2: Tuple[float, ...], tolerance: float = 0.01) -> bool:
     """Compare two color values within a specified tolerance"""
@@ -62,14 +63,41 @@ def materials_match(mat1: Material, mat2: Material, tolerance: float = 0.01) -> 
     if abs(mat1.metallic - mat2.metallic) > tolerance:
         return False
         
-    if abs(mat1.alpha_threshold - mat2.alpha_threshold) > tolerance:
+    if mat1.surface_render_method != mat2.surface_render_method:
         return False
-        
-    if not color_match(mat1.emission_color, mat2.emission_color, tolerance):
+    if mat1.use_backface_culling != mat2.use_backface_culling:
         return False
-    
-    if mat1.node_tree and mat2.node_tree:
-        consolidate_textures(mat1.node_tree, mat2.node_tree)
+    if bool(mat1.node_tree) != bool(mat2.node_tree):
+        return False
+    if mat1.node_tree:
+        nodes1, nodes2 = list(mat1.node_tree.nodes), list(mat2.node_tree.nodes)
+        if len(nodes1) != len(nodes2):
+            return False
+        for a, b in zip(nodes1, nodes2):
+            if a.bl_idname != b.bl_idname or len(a.inputs) != len(b.inputs):
+                return False
+            for name in ('image', 'node_tree', 'operation', 'blend_type', 'uv_map',
+                         'extension', 'interpolation', 'projection', 'is_active_output'):
+                if getattr(a, name, None) != getattr(b, name, None):
+                    return False
+            for socket1, socket2 in zip(a.inputs, b.inputs):
+                if not hasattr(socket1, 'default_value'):
+                    continue
+                v1, v2 = socket1.default_value, socket2.default_value
+                if isinstance(v1, (int, float)):
+                    if abs(v1-v2) > tolerance:
+                        return False
+                elif hasattr(v1, '__len__') and not isinstance(v1, str):
+                    if not color_match(v1, v2, tolerance):
+                        return False
+                elif v1 != v2:
+                    return False
+        def links(tree, nodes):
+            return sorted((nodes.index(link.from_node), link.from_socket.identifier,
+                           nodes.index(link.to_node), link.to_socket.identifier)
+                          for link in tree.links)
+        if links(mat1.node_tree, nodes1) != links(mat2.node_tree, nodes2):
+            return False
     
     return True
 
@@ -180,7 +208,21 @@ class AvatarToolkit_OT_CombineMaterials(Operator):
         cleaned_slots = 0
         for obj in meshes:
             initial_slots = len(obj.material_slots)
-            bpy.context.view_layer.objects.active = obj
-            bpy.ops.object.material_slot_remove_unused()
+            used = {polygon.material_index for polygon in obj.data.polygons}
+            unique = []
+            index_map = {}
+            for index, slot in enumerate(obj.material_slots):
+                if index not in used:
+                    continue
+                material = slot.material
+                if material not in unique:
+                    unique.append(material)
+                index_map[index] = unique.index(material)
+            polygon_indices = [index_map.get(p.material_index, 0) for p in obj.data.polygons]
+            obj.data.materials.clear()
+            for material in unique:
+                obj.data.materials.append(material)
+            for polygon, index in zip(obj.data.polygons, polygon_indices):
+                polygon.material_index = index
             cleaned_slots += initial_slots - len(obj.material_slots)
         return cleaned_slots

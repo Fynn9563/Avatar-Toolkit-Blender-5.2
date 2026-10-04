@@ -1,0 +1,1139 @@
+{
+  "blender": "5.2.2 LTS",
+  "results": [
+    {
+      "test": "Viseme generation, preview and second avatar isolation",
+      "status": "PASS"
+    },
+    {
+      "test": "AV3 eye bone creation and rotation",
+      "status": "PASS"
+    },
+    {
+      "test": "SDK2 eye setup creates blink and lowerlid shapes",
+      "status": "PASS"
+    },
+    {
+      "test": "Eye testing, rotation, blinking, adjustment and reset",
+      "status": "PASS"
+    },
+    {
+      "test": "Mesh attachment assigns weights and bone",
+      "status": "PASS"
+    },
+    {
+      "test": "Modifier application preserves all shape keys",
+      "status": "PASS"
+    },
+    {
+      "test": "Transforms and empty shape-key cleanup",
+      "status": "PASS"
+    },
+    {
+      "test": "Unused weights, groups and bone constraint cleanup",
+      "status": "PASS"
+    },
+    {
+      "test": "Bone connection",
+      "status": "PASS"
+    },
+    {
+      "test": "Merge bones to active transfers vertex weights",
+      "status": "PASS"
+    },
+    {
+      "test": "Merge bones to parent transfers vertex weights",
+      "status": "PASS"
+    },
+    {
+      "test": "Remove selected bones",
+      "status": "PASS"
+    },
+    {
+      "test": "Join selected avatar meshes preserves shapes",
+      "status": "PASS"
+    },
+    {
+      "test": "Join all avatar meshes",
+      "status": "PASS"
+    },
+    {
+      "test": "Material consolidation",
+      "status": "PASS"
+    },
+    {
+      "test": "Separate materials",
+      "status": "PASS"
+    },
+    {
+      "test": "Separate loose mesh parts",
+      "status": "PASS"
+    },
+    {
+      "test": "Armature merging retains accessory bones and parenting",
+      "status": "PASS"
+    },
+    {
+      "test": "Rigify metarig conversion",
+      "status": "PASS"
+    },
+    {
+      "test": "VRM conversion and collider removal",
+      "status": "PASS"
+    },
+    {
+      "test": "Resonite bone conversion",
+      "status": "PASS"
+    },
+    {
+      "test": "Pose to shape key and rest pose",
+      "status": "PASS"
+    },
+    {
+      "test": "Texture atlas pixels, UVs and files",
+      "status": "PASS"
+    },
+    {
+      "test": "UV selection reads and writes active UV layer",
+      "status": "PASS"
+    },
+    {
+      "test": "Offline dictionary translation and Unicode",
+      "status": "PASS"
+    },
+    {
+      "test": "Private updater release selection and credential handling",
+      "status": "PASS"
+    },
+    {
+      "test": "Updater validates archives, preserves user files and rolls back failures",
+      "status": "PASS"
+    },
+    {
+      "test": "AnimX binary primitives and Unicode serialization",
+      "status": "PASS"
+    },
+    {
+      "test": "AnimX raw, discrete and curve imports in raw, LZ4 and LZMA encodings",
+      "status": "PASS"
+    },
+    {
+      "test": "Safe merge doubles preserves differences between shape keys",
+      "status": "PASS"
+    },
+    {
+      "test": "Flip selected pose frames uses Blender 5 pose selection",
+      "status": "PASS"
+    },
+    {
+      "test": "Explode disconnected geometry restores transform settings",
+      "status": "PASS"
+    },
+    {
+      "test": "Armature standardization and manual validation",
+      "status": "PASS"
+    },
+    {
+      "test": "Digitigrade conversion creates calf and marks original chain",
+      "status": "PASS"
+    },
+    {
+      "test": "Shortest seam path selects connected edges",
+      "status": "PASS"
+    },
+    {
+      "test": "UV edge alignment in Image Editor context",
+      "status": "PASS"
+    },
+    {
+      "test": "Material-list selection and expansion controls",
+      "status": "PASS"
+    },
+    {
+      "test": "Translation operator applies dictionary results in a UI context",
+      "status": "PASS"
+    },
+    {
+      "test": "Panel drawing validates RNA properties and operator identifiers",
+      "status": "PASS"
+    },
+    {
+      "test": "All registered operator polls tolerate empty, mesh, edit and pose contexts",
+      "status": "PASS"
+    },
+    {
+      "test": "Atlas packs different image sizes and remaps linked meshes once",
+      "status": "PASS"
+    },
+    {
+      "test": "AnimX quaternion coordinate conversion and cubic tangent handles",
+      "status": "PASS"
+    },
+    {
+      "test": "Eye testing helper resets pose selections with Blender 5 API",
+      "status": "PASS"
+    }
+  ],
+  "operators": [
+    {
+      "operator": "avatar_toolkit.adjust_eyes",
+      "module": "avatar_toolkit.functions.eye_tracking",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.adjust_iris_height",
+      "module": "avatar_toolkit.functions.eye_tracking",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.align_uv_edges_to_target",
+      "module": "avatar_toolkit.functions.tools.uv_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.animx_importer",
+      "module": "avatar_toolkit.core.resonite_utils",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.apply_pose_as_rest",
+      "module": "avatar_toolkit.functions.pose_mode",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.apply_pose_as_shapekey",
+      "module": "avatar_toolkit.functions.pose_mode",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.apply_shapekey_force",
+      "module": "avatar_toolkit.functions.custom_tools.force_apply_modifier",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.apply_transforms",
+      "module": "avatar_toolkit.functions.tools.additional_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.atlas_materials",
+      "module": "avatar_toolkit.functions.atlas_materials",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.attach_mesh",
+      "module": "avatar_toolkit.functions.custom_tools.mesh_attachment",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.check_for_update",
+      "module": "avatar_toolkit.core.updater",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.clean_constraints",
+      "module": "avatar_toolkit.functions.tools.bone_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.clean_shapekeys",
+      "module": "avatar_toolkit.functions.tools.additional_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.clean_vertex_groups",
+      "module": "avatar_toolkit.functions.tools.bone_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.clean_weights",
+      "module": "avatar_toolkit.functions.tools.bone_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.clear_bone_highlighting",
+      "module": "avatar_toolkit.core.armature_validation",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.clear_translation_cache",
+      "module": "avatar_toolkit.ui.translation_panel",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.collapse_all_materials",
+      "module": "avatar_toolkit.ui.atlas_materials_panel",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.combine_materials",
+      "module": "avatar_toolkit.functions.optimization.materials_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.configure_deepl",
+      "module": "avatar_toolkit.ui.translation_panel",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.configure_libretranslate",
+      "module": "avatar_toolkit.ui.translation_panel",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.connect_bones",
+      "module": "avatar_toolkit.functions.tools.merge_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.convert_resonite",
+      "module": "avatar_toolkit.core.resonite_utils",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.convert_rigify_to_unity",
+      "module": "avatar_toolkit.functions.tools.rigify_converter",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.convert_vrm_to_unity",
+      "module": "avatar_toolkit.functions.tools.vrm_unity_conversion",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.create_digitigrade",
+      "module": "avatar_toolkit.functions.tools.bone_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.create_eye_tracking_av3",
+      "module": "avatar_toolkit.functions.eye_tracking",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.create_eye_tracking_sdk2",
+      "module": "avatar_toolkit.functions.eye_tracking",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.create_visemes",
+      "module": "avatar_toolkit.functions.visemes",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.expand_all_materials",
+      "module": "avatar_toolkit.ui.atlas_materials_panel",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.expand_section_materials",
+      "module": "avatar_toolkit.ui.atlas_materials_panel",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.explode_mesh",
+      "module": "avatar_toolkit.functions.tools.general_mesh_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.export",
+      "module": "avatar_toolkit.ui.quick_access_panel",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.export_fbx",
+      "module": "avatar_toolkit.ui.quick_access_panel",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.export_resonite",
+      "module": "avatar_toolkit.core.resonite_utils",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.find_shortest_seam_path",
+      "module": "avatar_toolkit.functions.tools.general_mesh_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.flip_pose_frames",
+      "module": "avatar_toolkit.functions.tools.bone_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.highlight_problem_bones",
+      "module": "avatar_toolkit.core.armature_validation",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.import",
+      "module": "avatar_toolkit.core.importers.importer",
+      "executed": true,
+      "coverage": "executed in compatibility suite"
+    },
+    {
+      "operator": "avatar_toolkit.join_all_meshes",
+      "module": "avatar_toolkit.functions.optimization.mesh_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.join_selected_meshes",
+      "module": "avatar_toolkit.functions.optimization.mesh_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.merge_armatures",
+      "module": "avatar_toolkit.functions.custom_tools.armature_merging",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.merge_to_active",
+      "module": "avatar_toolkit.functions.tools.merge_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.merge_to_parent",
+      "module": "avatar_toolkit.functions.tools.merge_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.preview_visemes",
+      "module": "avatar_toolkit.functions.visemes",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.remove_all_colliders",
+      "module": "avatar_toolkit.functions.tools.collider_removal",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.remove_doubles",
+      "module": "avatar_toolkit.functions.optimization.remove_doubles",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.remove_selected_bones",
+      "module": "avatar_toolkit.functions.tools.bone_tools",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.reset_blink_test",
+      "module": "avatar_toolkit.functions.eye_tracking",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.reset_eye_rotation",
+      "module": "avatar_toolkit.functions.eye_tracking",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.reset_eye_tracking",
+      "module": "avatar_toolkit.functions.eye_tracking",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.restart_blender_popup",
+      "module": "avatar_toolkit.core.updater",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.rotate_eye_bones",
+      "module": "avatar_toolkit.functions.eye_tracking",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.search_attach_bone",
+      "module": "avatar_toolkit.ui.custom_avatar_panel",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.search_attach_mesh",
+      "module": "avatar_toolkit.ui.custom_avatar_panel",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.search_merge_armature",
+      "module": "avatar_toolkit.ui.custom_avatar_panel",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.search_merge_armature_into",
+      "module": "avatar_toolkit.ui.custom_avatar_panel",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.select_all_materials",
+      "module": "avatar_toolkit.ui.atlas_materials_panel",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.select_none_materials",
+      "module": "avatar_toolkit.ui.atlas_materials_panel",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.separate_loose",
+      "module": "avatar_toolkit.functions.tools.mesh_separation",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.separate_materials",
+      "module": "avatar_toolkit.functions.tools.mesh_separation",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.shape_key_to_basis",
+      "module": "avatar_toolkit.functions.tools.apply_shapekey_to_basis",
+      "executed": true,
+      "coverage": "executed in compatibility suite"
+    },
+    {
+      "operator": "avatar_toolkit.standardize_armature",
+      "module": "avatar_toolkit.functions.tools.standardize_armature",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.standardize_issues_popup",
+      "module": "avatar_toolkit.functions.tools.standardize_armature",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.start_eye_testing",
+      "module": "avatar_toolkit.functions.eye_tracking",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.start_pose_mode",
+      "module": "avatar_toolkit.functions.pose_mode",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.stop_eye_testing",
+      "module": "avatar_toolkit.functions.eye_tracking",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.stop_pose_mode",
+      "module": "avatar_toolkit.functions.pose_mode",
+      "executed": true,
+      "coverage": "executed in compatibility suite"
+    },
+    {
+      "operator": "avatar_toolkit.test_blinking",
+      "module": "avatar_toolkit.functions.eye_tracking",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.test_lowerlid",
+      "module": "avatar_toolkit.functions.eye_tracking",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.test_translation_service",
+      "module": "avatar_toolkit.ui.translation_panel",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.translate_names",
+      "module": "avatar_toolkit.ui.translation_panel",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.translation_restart_popup",
+      "module": "avatar_toolkit.ui.settings_panel",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.translation_stats",
+      "module": "avatar_toolkit.ui.translation_panel",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.update_latest",
+      "module": "avatar_toolkit.core.updater",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.update_notification_popup",
+      "module": "avatar_toolkit.core.updater",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "avatar_toolkit.validate_armature_manual",
+      "module": "avatar_toolkit.core.armature_validation",
+      "executed": true,
+      "coverage": "executed in feature suite"
+    },
+    {
+      "operator": "avatar_toolkit.validate_tpose",
+      "module": "avatar_toolkit.core.armature_validation",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.add_missing_vertex_groups_from_bones",
+      "module": "avatar_toolkit.core.mmd.operators.model",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.apply_additional_transform",
+      "module": "avatar_toolkit.core.mmd.operators.model",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.apply_bone_morph",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.apply_bone_morph_offset",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.apply_material_morph_offset",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.apply_uv_morph",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.assemble_all",
+      "module": "avatar_toolkit.core.mmd.operators.model",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.attach_meshes",
+      "module": "avatar_toolkit.core.mmd.operators.misc",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.bone_fixed_axis_setup",
+      "module": "avatar_toolkit.core.mmd.operators.model",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.bone_local_axes_setup",
+      "module": "avatar_toolkit.core.mmd.operators.model",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.build_rig",
+      "module": "avatar_toolkit.core.mmd.operators.model",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.change_mmd_ik_loop_factor",
+      "module": "avatar_toolkit.core.mmd.operators.misc",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.clean_additional_transform",
+      "module": "avatar_toolkit.core.mmd.operators.model",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.clean_duplicated_material_morphs",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.clean_rig",
+      "module": "avatar_toolkit.core.mmd.operators.model",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.clean_shape_keys",
+      "module": "avatar_toolkit.core.mmd.operators.misc",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.clear_bone_morph_view",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.clear_temp_materials",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.clear_uv_morph_view",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.convert_bone_morph_to_vertex_morph",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.convert_bsdf_materials",
+      "module": "avatar_toolkit.core.mmd.operators.material",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.convert_group_morph_to_vertex_morph",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.convert_materials",
+      "module": "avatar_toolkit.core.mmd.operators.material",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.convert_materials_for_cycles",
+      "module": "avatar_toolkit.core.mmd.operators.material",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.convert_to_mmd_model",
+      "module": "avatar_toolkit.core.mmd.operators.model",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.create_mmd_model_root_object",
+      "module": "avatar_toolkit.core.mmd.operators.model",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.create_work_material",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.disassemble_all",
+      "module": "avatar_toolkit.core.mmd.operators.model",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.edge_preview_setup",
+      "module": "avatar_toolkit.core.mmd.operators.material",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.edit_bone_morph_offset",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.edit_uv_morph",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.execute_translation_batch",
+      "module": "avatar_toolkit.core.mmd.operators.translations",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.export_translation_csv",
+      "module": "avatar_toolkit.core.mmd.operators.translations",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.flip_pose",
+      "module": "avatar_toolkit.core.mmd.operators.view",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.global_translation_popup",
+      "module": "avatar_toolkit.core.mmd.operators.translations",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.import_model",
+      "module": "avatar_toolkit.core.mmd.operators.fileio",
+      "executed": true,
+      "coverage": "executed in compatibility suite"
+    },
+    {
+      "operator": "mmd_tools.import_translation_csv",
+      "module": "avatar_toolkit.core.mmd.operators.translations",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.import_vmd",
+      "module": "avatar_toolkit.core.mmd.operators.fileio",
+      "executed": true,
+      "coverage": "executed in compatibility suite"
+    },
+    {
+      "operator": "mmd_tools.join_meshes",
+      "module": "avatar_toolkit.core.mmd.operators.misc",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.joint_add",
+      "module": "avatar_toolkit.core.mmd.operators.rigid_body",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.joint_remove",
+      "module": "avatar_toolkit.core.mmd.operators.rigid_body",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.material_morph_offset_init",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.material_open_sphere_texture",
+      "module": "avatar_toolkit.core.mmd.operators.material",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.material_open_texture",
+      "module": "avatar_toolkit.core.mmd.operators.material",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.material_remove_sphere_texture",
+      "module": "avatar_toolkit.core.mmd.operators.material",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.material_remove_texture",
+      "module": "avatar_toolkit.core.mmd.operators.material",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.merge_materials",
+      "module": "avatar_toolkit.core.mmd.operators.material",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.model_join_by_bones",
+      "module": "avatar_toolkit.core.mmd.operators.model_edit",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.model_separate_by_bones",
+      "module": "avatar_toolkit.core.mmd.operators.model_edit",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.morph_add",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.morph_copy",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.morph_move",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.morph_offset_add",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.morph_offset_remove",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.morph_overwrite_from_active_action_pose",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.morph_remove",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.morph_slider_setup",
+      "module": "avatar_toolkit.core.mmd.operators.model",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.move_material_down",
+      "module": "avatar_toolkit.core.mmd.operators.material",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.move_material_up",
+      "module": "avatar_toolkit.core.mmd.operators.material",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.object_move",
+      "module": "avatar_toolkit.core.mmd.operators.misc",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.object_select",
+      "module": "avatar_toolkit.core.mmd.operators.misc",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.ptcache_rigid_body_bake",
+      "module": "avatar_toolkit.core.mmd.operators.rigid_body",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.ptcache_rigid_body_delete_bake",
+      "module": "avatar_toolkit.core.mmd.operators.rigid_body",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.recalculate_bone_roll",
+      "module": "avatar_toolkit.core.mmd.operators.misc",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.reset_object_visibility",
+      "module": "avatar_toolkit.core.mmd.operators.model",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.reset_shading",
+      "module": "avatar_toolkit.core.mmd.operators.view",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.restore_mmd_translation_element_name",
+      "module": "avatar_toolkit.core.mmd.operators.translations",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.rigid_body_add",
+      "module": "avatar_toolkit.core.mmd.operators.rigid_body",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.rigid_body_remove",
+      "module": "avatar_toolkit.core.mmd.operators.rigid_body",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.rigid_body_select",
+      "module": "avatar_toolkit.core.mmd.operators.rigid_body",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.rigid_body_world_update",
+      "module": "avatar_toolkit.core.mmd.operators.rigid_body",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.sdef_bind",
+      "module": "avatar_toolkit.core.mmd.operators.sdef",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.sdef_cache_reset",
+      "module": "avatar_toolkit.core.mmd.operators.sdef",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.sdef_unbind",
+      "module": "avatar_toolkit.core.mmd.operators.sdef",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.select_bone_morph_offset_bone",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.separate_by_materials",
+      "module": "avatar_toolkit.core.mmd.operators.misc",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.set_glsl_shading",
+      "module": "avatar_toolkit.core.mmd.operators.view",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.set_shadeless_glsl_shading",
+      "module": "avatar_toolkit.core.mmd.operators.view",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.translate_mmd_model",
+      "module": "avatar_toolkit.core.mmd.operators.translations",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.view_bone_morph",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "mmd_tools.view_uv_morph",
+      "module": "avatar_toolkit.core.mmd.operators.morph",
+      "executed": false,
+      "coverage": "registration and polling only"
+    },
+    {
+      "operator": "wm.search_operator_base",
+      "module": "avatar_toolkit.ui.search_operators",
+      "executed": false,
+      "coverage": "registration and polling only"
+    }
+  ]
+}

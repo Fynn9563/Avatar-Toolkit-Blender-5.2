@@ -87,7 +87,7 @@ class BinPacker(object):
         self.bin = structure
 
     def fit(self):
-        structure = self.bin
+        structure = sorted(self.bin, key=lambda image: max(image.w, image.h), reverse=True)
         structure_len = len(self.bin)
         w: int = 0
         h: int = 0

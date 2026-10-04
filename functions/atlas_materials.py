@@ -62,6 +62,7 @@ def MaterialImageList_to_Image_list(classitem: MaterialImageList) -> List[Image]
 
 def get_material_images_from_scene(context: Context) -> list[MaterialImageList]:
     material_image_list: list[MaterialImageList] = []
+    seen_materials = set()
     
     with ProgressTracker(context, len(context.scene.objects), "Processing Materials") as progress:
         for obj in context.scene.objects:
@@ -69,6 +70,9 @@ def get_material_images_from_scene(context: Context) -> list[MaterialImageList]:
                 for mat_slot in obj.material_slots:
                     # Only process materials that are selected for atlas
                     if mat_slot.material and mat_slot.material.include_in_atlas is True:
+                        if mat_slot.material.as_pointer() in seen_materials:
+                            continue
+                        seen_materials.add(mat_slot.material.as_pointer())
                         new_mat_image_item = MaterialImageList()
                         try:
                             new_mat_image_item.albedo = bpy.data.images[mat_slot.material.texture_atlas_albedo]
@@ -173,8 +177,8 @@ class AvatarToolKit_OT_AtlasMaterials(Operator):
             mat_images = packer.fit()
 
             size = [
-                max([matimg.fit.w + matimg.albedo.size[0] for matimg in mat_images]),
-                max([matimg.fit.h + matimg.albedo.size[1] for matimg in mat_images])
+                max([matimg.fit.x + matimg.albedo.size[0] for matimg in mat_images]),
+                max([matimg.fit.y + matimg.albedo.size[1] for matimg in mat_images])
             ]
             
             atlased_mat = MaterialImageList()
@@ -185,8 +189,10 @@ class AvatarToolKit_OT_AtlasMaterials(Operator):
                     x, y = int(mat.fit.x), int(mat.fit.y)
                     w, h = int(mat.albedo.size[0]), int(mat.albedo.size[1])
 
-                    for obj in bpy.data.objects:
-                        if obj.type == 'MESH':
+                    seen_meshes = set()
+                    for obj in context.scene.objects:
+                        if obj.type == 'MESH' and obj.data.as_pointer() not in seen_meshes:
+                            seen_meshes.add(obj.data.as_pointer())
                             mesh = obj.data
                             for layer in mesh.polygons:
                                 if (obj.material_slots[layer.material_index].material and 

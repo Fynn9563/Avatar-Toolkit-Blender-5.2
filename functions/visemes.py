@@ -274,11 +274,6 @@ class AvatarToolkit_OT_CreateVisemes(Operator):
         for index, (key, data) in enumerate(shapekey_data.items()):
             wm.progress_update(index)
             
-            # Check cache first
-            cached_data = VisemeCache.get_cached_shape(key, data['mix'])
-            if cached_data:
-                continue
-            
             # Create new shape key
             self.mix_shapekey(context, renamed_shapes, data['mix'], key, mesh)  # Added mesh parameter
             

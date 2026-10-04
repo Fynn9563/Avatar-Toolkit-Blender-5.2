@@ -15,6 +15,9 @@ addon = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = addon
 spec.loader.exec_module(addon)
 addon.register()
+from avatar_toolkit.core import addon_preferences
+addon_preferences.PREFERENCES_FILE = str(OUT / "test-preferences.json")
+pathlib.Path(addon_preferences.PREFERENCES_FILE).write_text("{}", encoding="utf-8")
 results = []
 covered = set()
 
@@ -64,9 +67,9 @@ def fixture():
     mesh.vertex_groups.new(name='Eye_R').add([4,5], 1, 'REPLACE')
     mesh.shape_key_add(name='Basis')
     for index, name in enumerate(('A','O','CH','WinkL','WinkR','LowerL','LowerR')):
-        key = mesh.shape_key_add(name=name)
+        key = mesh.shape_key_add(name=name, from_mix=False)
         key.data[index % 8].co.z += .05 * (index+1)
-    mesh.shape_key_add(name='Empty')
+    mesh.shape_key_add(name='Empty', from_mix=False)
     props = bpy.context.scene.avatar_toolkit
     props.active_armature = 'ARM_' + str(arm.as_pointer())
     props.validation_mode = 'NONE'
@@ -112,6 +115,8 @@ def av3(arm, mesh, props):
     op('avatar_toolkit.create_eye_tracking_av3')
     assert arm.data.bones['Eye_L'].parent.name == 'Head'
     assert arm.data.bones['Eye_L'].length > 0
+    arm.data.bones['Eye_L'].name = 'LeftEye'
+    arm.data.bones['Eye_R'].name = 'RightEye'
     op('avatar_toolkit.rotate_eye_bones')
 
 @case('SDK2 eye setup creates blink and lowerlid shapes')
@@ -126,8 +131,6 @@ def sdk2(arm, mesh, props):
 def eye_tests(arm, mesh, props):
     arm.data.bones['Eye_L'].name = 'LeftEye'
     arm.data.bones['Eye_R'].name = 'RightEye'
-    mesh.vertex_groups['Eye_L'].name = 'LeftEye'
-    mesh.vertex_groups['Eye_R'].name = 'RightEye'
     props.eye_left, props.eye_right = 'LeftEye','RightEye'
     for source, target in [('WinkL','vrc.blink_left'),('WinkR','vrc.blink_right'),('LowerL','vrc.lowerlid_left'),('LowerR','vrc.lowerlid_right')]:
         mesh.data.shape_keys.key_blocks[source].name = target
@@ -226,7 +229,10 @@ def merge_parent(arm, mesh, props):
 
 @case('Remove selected bones')
 def remove_bones(arm, mesh, props):
-    selected_bones(arm, ['Unused'], 'Unused')
+    props.zero_weight_bones.clear()
+    item = props.zero_weight_bones.add()
+    item.name = 'Unused'
+    item.selected = True
     op('avatar_toolkit.remove_selected_bones')
     bpy.ops.object.mode_set(mode='OBJECT')
     assert 'Unused' not in arm.data.bones
@@ -297,14 +303,16 @@ def armature_merge(arm, mesh, props):
 @case('Rigify metarig conversion')
 def rigify(arm, mesh, props):
     arm.name = 'metarig'
-    arm.data.bones['Spine'].name = 'spine'
+    arm.data.bones['Hips'].name = 'spine'
+    arm.data.bones['Spine'].name = 'spine.001'
     op('avatar_toolkit.convert_rigify_to_unity')
     assert arm.name == 'Armature'
     assert 'Spine' in arm.data.bones
 
 @case('VRM conversion and collider removal')
 def vrm(arm, mesh, props):
-    arm.data.bones['Hips'].name = 'J_Bip_C_Hips'
+    for name in ('Hips', 'Spine', 'Chest', 'Neck', 'Head'):
+        arm.data.bones[name].name = 'J_Bip_C_' + name
     collider = bpy.data.objects.new('VRM_Collider', None)
     bpy.context.collection.objects.link(collider)
     collider.parent = arm
@@ -350,7 +358,7 @@ def atlas(arm, mesh, props):
     images = [n.image for n in material.node_tree.nodes if n.type == 'TEX_IMAGE']
     assert len(images) == 6
     assert any(i.pixels[0] > .9 and i.pixels[1] < .1 for i in images)
-    assert len(list(OUT.glob('Atlas_*.png'))) == 6
+    assert len(list(OUT.glob('Atlas_*_atlas_fixture.png'))) == 6
 
 @case('UV selection reads and writes active UV layer')
 def uv_selection(arm, mesh, props):
@@ -366,8 +374,8 @@ def translation(arm, mesh, props):
     manager = AvatarToolkitTranslationManager()
     manager.translation_mode = TranslationMode.DICTIONARY_ONLY
     assert safe_decode_text('左目') == '左目'
-    result = manager.translate_single('左目', category='bone')
-    assert result.translated_name != '左目'
+    result = manager.translate_single('左目', category='bones')
+    assert result.translated != '左目'
 
 # Inventory all registered operators. A registration/poll check is recorded separately
 # from execution coverage and does not imply the feature was exercised.

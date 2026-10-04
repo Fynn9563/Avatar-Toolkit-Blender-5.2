@@ -16,9 +16,10 @@ def ReadCSharp_str(data: BytesIO) -> str:
     #print("read string: "+string)
     return string
 
-def WriteCSharp_str(data: BytesIO, string: str) -> str:
-    write7bitEncoded_int(len(string))
-    return data.write(string.encode("utf-8", errors="replace"))
+def WriteCSharp_str(data: BytesIO, string: str):
+    encoded = string.encode('utf-8')
+    write7bitEncoded_int(data, len(encoded))
+    return data.write(encoded)
 
 def read7bitEncoded_ulong(data: BytesIO) -> int:
         num: int = int(0)
@@ -47,18 +48,15 @@ def read7bitEncoded_int(data: BytesIO) -> int:
         return -1
 
 def write7bitEncoded_ulong(data: BytesIO, integer: int) -> None:
-    while integer > int(0):
-        b: int = int(integer & int(127))
+    if not 0 <= integer < 2**64:
+        raise ValueError('Unsigned 7-bit value is out of range')
+    while integer >= 128:
+        data.write(bytes([(integer & 127) | 128]))
         integer >>= 7
-        if integer > int(0):
-            b |= 128
-        data.write(b)
-        if integer <= int(0):
-            return
+    data.write(bytes([integer]))
+
 
 def write7bitEncoded_int(data: BytesIO, value: int) -> None:
-    num: int = int(value)
-    while(num >= int(128)):
-        data.write(int(num | int(128)))
-        num >>= 7
-    data.Write(int(num))
+    if not 0 <= value < 2**31:
+        raise ValueError('Length is out of range')
+    write7bitEncoded_ulong(data, value)
