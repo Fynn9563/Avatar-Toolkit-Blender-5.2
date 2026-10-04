@@ -172,6 +172,10 @@
     {
       "test": "Eye testing helper resets pose selections with Blender 5 API",
       "status": "PASS"
+    },
+    {
+      "test": "Translated UI titles, preferences and updater display manifest version",
+      "status": "PASS"
     }
   ],
   "operators": [

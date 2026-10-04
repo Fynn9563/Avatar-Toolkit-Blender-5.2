@@ -1,6 +1,6 @@
 # Avatar Toolkit
-This private compatibility fork (0.5.6) targets Blender 5.2.2 LTS.
-Install `avatar_toolkit-0.5.6.zip` through **Edit > Preferences > Get Extensions > Install from Disk**.
+This private compatibility fork (0.5.7) targets Blender 5.2.2 LTS.
+Install `avatar_toolkit-0.5.7.zip` through **Edit > Preferences > Get Extensions > Install from Disk**.
 Restart Blender after replacing an older copy.
 
 Compatibility checks run in Blender 5.2.2 include repeated registration and cleanup,

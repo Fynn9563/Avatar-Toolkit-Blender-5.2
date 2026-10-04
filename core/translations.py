@@ -5,7 +5,7 @@ import logging
 from bpy.app.translations import locale
 from typing import Dict, List, Tuple, Optional, Any
 from ..core.logging_setup import logger
-from .addon_preferences import save_preference, get_preference
+from .addon_preferences import save_preference, get_preference, get_current_version
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -89,6 +89,8 @@ def t(phrase: str, default: Optional[str] = None, **kwargs) -> str:
         if verbose:
             logger.warning(f'Unknown phrase: {phrase}')
         return default if default is not None else phrase
+    if phrase == "AvatarToolkit.label":
+        kwargs.setdefault("version", get_current_version())
     return output.format(**kwargs) if kwargs else output
 
 def get_language_display_name(lang: str) -> str:

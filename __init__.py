@@ -1,14 +1,16 @@
 import bpy
+import tomllib
+from pathlib import Path
 from bpy.app.handlers import persistent
 
 
 modules = None
 ordered_classes = None
 
-def show_version_error_popup():
+def show_version_error_popup(minimum, maximum):
     def draw(self, context):
         self.layout.label(text="Sorry, this version of Avatar Toolkit does not work on this version of Blender.")
-        self.layout.label(text="Please check the GitHub repository for the correct version for your Blender.")
+        self.layout.label(text=f"Requires Blender {minimum} or newer, below {maximum}.")
         self.layout.operator("wm.url_open", text="Open GitHub Repository").url = "https://github.com/Fynn9563/Avatar-Toolkit-Blender-5.2"
    
     bpy.context.window_manager.popup_menu(draw, title="Avatar Toolkit Version Error", icon='ERROR')
@@ -16,8 +18,11 @@ def show_version_error_popup():
 def register():
     import bpy
     version = bpy.app.version
-    if version[0] > 5 or (version[0] == 5 and version[1] >= 3): 
-        show_version_error_popup()
+    with (Path(__file__).parent / 'blender_manifest.toml').open('rb') as manifest_file:
+        manifest = tomllib.load(manifest_file)
+    minimum, maximum = manifest['blender_version_min'], manifest['blender_version_max']
+    if not tuple(map(int, minimum.split('.'))) <= version < tuple(map(int, maximum.split('.'))):
+        show_version_error_popup(minimum, maximum)
         return
         
     print("Starting registration")

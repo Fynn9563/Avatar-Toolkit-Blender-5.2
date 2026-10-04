@@ -186,3 +186,30 @@ def eye_helper(arm,mesh,props):
     eye.stop_testing(bpy.context)
     assert props.eye_rotation_x==0
     assert eye.eye_left is None
+
+@case('Translated UI titles, preferences and updater display manifest version')
+def ui_versions(arm,mesh,props):
+    import tomllib
+    from types import SimpleNamespace
+    from unittest.mock import patch
+    from avatar_toolkit.core import translations, addon_preferences, updater
+    from avatar_toolkit.ui import main_panel, uv_panel
+    expected=tomllib.loads((ROOT/'blender_manifest.toml').read_text())['version']
+    class Labels:
+        def __init__(self,labels): self.labels=labels
+        def __getattr__(self,name): return lambda *args,**kwargs: Labels(self.labels)
+        def label(self,**kwargs): self.labels.append(kwargs.get('text',''))
+        def operator(self,*args,**kwargs): return SimpleNamespace()
+    for path in (ROOT/'resources/translations').glob('*.json'):
+        dictionary=json.loads(path.read_text(encoding='utf-8'))['messages']
+        with patch.object(translations,'dictionary',dictionary):
+            text=translations.t('AvatarToolkit.label')
+            assert expected in text and '{version}' not in text, (path,text)
+    assert expected in main_panel.AvatarToolKit_PT_AvatarToolkitPanel.bl_label
+    assert expected in uv_panel.AvatarToolKit_PT_UVPanel.bl_label
+    labels=[]; layout=Labels(labels)
+    addon_preferences.AvatarToolkitPreferences.draw(SimpleNamespace(layout=layout),bpy.context)
+    updater.draw_updater_panel(bpy.context,layout)
+    main_panel.draw_title(SimpleNamespace(layout=layout))
+    assert sum(expected in text for text in labels)>=3,labels
+    assert any(bpy.app.version_string in text for text in labels),labels

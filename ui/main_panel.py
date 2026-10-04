@@ -17,6 +17,8 @@ def draw_title(self: Panel) -> None:
     row.scale_y: float = 1.2
     row.label(text=t("AvatarToolkit.label"), icon='ARMATURE_DATA')
     
+    col.label(text=f"Blender {bpy.app.version_string}", icon='BLENDER')
+
     # Description
     col.separator(factor=UIStyle.SECTION_SEPARATOR_FACTOR)
     description = " ".join([
