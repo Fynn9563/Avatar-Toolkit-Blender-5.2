@@ -17,7 +17,7 @@ from ..functions.tools.bone_tools import (
     AvatarToolKit_OT_RemoveZeroWeightVertexGroups,
     AvatarToolKit_OT_FlipCurrentKeyFrames
 )
-from ..functions.tools.standardize_armature import AvatarToolkit_OT_StandardizeArmature
+from ..functions.tools.standardize_armature import AvatarToolkit_OT_StandardizeArmature, draw_mapping
 from ..functions.tools.merge_tools import AvatarToolkit_OT_MergeToActive, AvatarToolkit_OT_MergeToParent, AvatarToolkit_OT_ConnectBones
 from ..functions.tools.rigify_converter import AvatarToolkit_OT_ConvertRigifyToUnity
 from ..functions.tools.general_mesh_tools import AvatarToolkit_OT_SelectShortestSeamPath, AvatarToolkit_OT_ExplodeMesh
@@ -63,7 +63,13 @@ class AvatarToolKit_PT_ToolsPanel(Panel):
         
         # Standardization Tools
         col = draw_section_header(layout, t("Tools.standardize_title"), icon='OUTLINER_OB_ARMATURE')
-        col.operator(AvatarToolkit_OT_StandardizeArmature.bl_idname, icon='CHECKMARK')
+        col.operator(AvatarToolkit_OT_StandardizeArmature.bl_idname, icon='ARMATURE_DATA')
+        col.prop(toolkit, 'show_humanoid_mapping')
+        if toolkit.show_humanoid_mapping:
+            editor = col.box()
+            editor.enabled = context.mode in {'OBJECT', 'POSE'}
+            draw_mapping(editor, context)
+            editor.operator(AvatarToolkit_OT_StandardizeArmature.bl_idname, text='Review and Apply', icon='CHECKMARK')
 
         # Weight Tools
         col = draw_section_header(layout, t("Tools.weight_title"), icon='GROUP_BONE')

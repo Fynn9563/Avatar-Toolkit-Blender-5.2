@@ -1,11 +1,10 @@
 """Additional edit-mode and UI-context fixtures, loaded by extended suite."""
 @case('Armature standardization and manual validation')
 def standardize(arm, mesh, props):
-    from unittest.mock import patch
     arm.data.bones['Hips'].name='pelvis'
-    from avatar_toolkit.functions.tools import standardize_armature
-    with patch.object(standardize_armature, 'validate_armature', return_value=(True,[],False)):
-        op('avatar_toolkit.standardize_armature')
+    op('avatar_toolkit.humanoid_auto_map')
+    assert 'pelvis' in arm.data.bones
+    op('avatar_toolkit.standardize_armature')
     assert 'Hips' in arm.data.bones
     op('avatar_toolkit.validate_armature_manual')
     op('avatar_toolkit.highlight_problem_bones')

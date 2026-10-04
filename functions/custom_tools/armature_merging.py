@@ -248,7 +248,9 @@ def _custom_values(data):
         if hasattr(value, 'to_dict'): return {key: plain(item) for key, item in value.to_dict().items()}
         if hasattr(value, 'to_list'): return value.to_list()
         return value
-    return {key: plain(value) for key, value in data.items()}
+    # Mapping storage belongs to its rig; bone identities do not affect compatibility.
+    metadata = {'avatar_toolkit_humanoid', '_avatar_toolkit_humanoid_id'}
+    return {key: plain(value) for key, value in data.items() if key not in metadata}
 
 
 def _copy_custom(source, destination, added=None):
@@ -470,6 +472,10 @@ def perform_merge(context, plan, previous_mode=None):
         bpy.ops.object.mode_set(mode='OBJECT')
         context.view_layer.update()
         desired_pose = {name: matrix @ staged_destination.data.bones[name].matrix_local for name, matrix in deformation.items()}
+        import uuid
+        for name in deformation:
+            bone = staged_destination.data.bones[name]
+            if bone.get('_avatar_toolkit_humanoid_id'): bone['_avatar_toolkit_humanoid_id'] = uuid.uuid4().hex
         def depth(name):
             bone = staged_destination.data.bones[name]; count = 0
             while bone.parent: count += 1; bone = bone.parent

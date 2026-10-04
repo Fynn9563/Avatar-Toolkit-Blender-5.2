@@ -729,6 +729,9 @@ class AvatarToolkitSceneProperties(PropertyGroup):
         default=True
     )
 
+    show_humanoid_mapping: BoolProperty(name='Bone Assignments', default=False,
+                                       description='Show the humanoid role editor in the Tools panel')
+
     standardize_fix_hierarchy: BoolProperty(
         name=t("Tools.standardize_fix_hierarchy"),
         description=t("Tools.standardize_fix_hierarchy_desc"),
