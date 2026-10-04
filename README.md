@@ -4,7 +4,7 @@ A maintained fork of Avatar Toolkit for preparing avatars for VRChat, Resonite, 
 
 **Current release:** 0.5.7
 
-**Tested runtime:** Blender 5.2.2 LTS on Windows, Python 3.13.13
+**Target Blender version:** 5.2.2 LTS
 
 ## Installation
 
@@ -13,15 +13,13 @@ A maintained fork of Avatar Toolkit for preparing avatars for VRChat, Resonite, 
 3. Select the ZIP, enable Avatar Toolkit, and restart Blender if replacing an older installation.
 4. Open the **Avatar Toolkit** tab in the 3D Viewport sidebar (`N`).
 
-The package includes LZ4 dependency wheels for Blender's Python 3.13. NumPy is supplied by the tested Blender installation; no separate Python setup is needed for that installation.
+The package includes LZ4 dependency wheels for Blender's Python 3.13. Use Blender's bundled Python and NumPy; no separate Python setup is required.
 
-The manifest accepts Blender **5.0.0 up to, but excluding, 5.3.0**. Execution testing was performed on **5.2.2 LTS for Windows**. Other Blender versions and macOS/Linux runtimes have not been verified by these tests.
+The extension manifest accepts Blender **5.0.0 up to, but excluding, 5.3.0**.
 
 ## Updates
 
 Releases are published in [this repository](https://github.com/Fynn9563/Avatar-Toolkit-Blender-5.2/releases). Download the extension ZIP from the release assets and install it through Blender's **Install from Disk** menu. Restart Blender after replacing an older version.
-
-UI version labels read the package manifest. For the current test results and update-path coverage, see [TEST_REPORT.md](TEST_REPORT.md).
 
 ## Features
 
@@ -35,22 +33,6 @@ UI version labels read the package manifest. For the current test results and up
 - Resonite AnimX animation import, including raw, LZ4, and LZMA encodings.
 
 **Integration limits:** VRM, Source, 3DS, and X3D file imports require their respective external importers. VRM bone conversion is a separate tool included in this fork. DeepL/LibreTranslate services require their own credentials or configured server. PMD/VPD import and MMD-format export remain unsupported.
-
-## Testing
-
-Version 0.5.7 passed **44 automated feature scenarios**, the compatibility suite, and Blender extension build/validation checks. Across the feature and compatibility suites, **61 distinct add-on operators** were executed. All **160 registered operators** passed polling checks across multiple contexts. The release download and isolated update installation checks also passed.
-
-These checks do not establish exhaustive coverage of every function or input. Interactive dialogs, production avatars, real-time viewport behavior, live translation services, third-party importers, and some bundled MMD editing tools still need manual or external integration testing. See [TEST_REPORT.md](TEST_REPORT.md) and the [operator coverage inventory](tests/operator_coverage.json) for details.
-
-Run from the repository root with your Blender executable:
-
-```powershell
-$blenderPath = 'E:\SteamLibrary\steamapps\common\Blender\blender.exe'
-& $blenderPath --background --factory-startup --python-exit-code 1 --python tests/blender_extended_suite.py
-& $blenderPath --background --factory-startup --python-exit-code 1 --python tests/blender_compatibility.py
-```
-
-Tests create synthetic scenes and write fixtures/results into `.validation/`. Use `--factory-startup` to isolate them from your saved startup scene. Package checks and build commands are documented in [TEST_REPORT.md](TEST_REPORT.md).
 
 ## Issues
 
