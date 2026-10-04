@@ -1,6 +1,5 @@
 import bpy
 import os
-import subprocess
 import tempfile
 import tomllib
 import re
@@ -26,7 +25,7 @@ _pending_checks = Queue()
 # Define which version series this installation can update to
 # For example: ["0.1"] means only look for 0.1.x updates
 # ["0.2", "0.3"] would look for both 0.2.x and 0.3.x
-ALLOWED_VERSION_SERIES = ["0.5"]
+ALLOWED_VERSION_SERIES = ["0.6"]
 
 is_checking_for_update: bool = False
 update_needed: bool = False
@@ -144,21 +143,7 @@ def _compatible(value):
 
 
 def _github_headers(asset=False):
-    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
-    if not token:
-        try:
-            result = subprocess.run(
-                ["gh", "auth", "token", "--hostname", "github.com"],
-                capture_output=True, text=True, timeout=10,
-                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
-            if result.returncode == 0:
-                token = result.stdout.strip()
-        except (OSError, subprocess.TimeoutExpired):
-            pass
-    if not token:
-        raise RuntimeError("Private updates require gh auth login or GH_TOKEN.")
-    return {"Authorization": f"Bearer {token}",
-            "Accept": "application/octet-stream" if asset else "application/vnd.github+json",
+    return {"Accept": "application/octet-stream" if asset else "application/vnd.github+json",
             "User-Agent": "Avatar-Toolkit", "X-GitHub-Api-Version": "2022-11-28"}
 
 
@@ -223,7 +208,7 @@ def get_github_releases() -> bool:
         update_error = ""
         return True
     except (OSError, ValueError, RuntimeError, KeyError) as exc:
-        update_error = f"Could not check private repository updates: {exc}"
+        update_error = f"Could not check repository updates: {exc}"
         return False
 
 

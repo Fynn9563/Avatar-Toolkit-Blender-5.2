@@ -19,7 +19,7 @@ The extension manifest accepts Blender **5.0.0 up to, but excluding, 5.3.0**.
 
 ## Updates
 
-Releases are published in [this repository](https://github.com/Fynn9563/Avatar-Toolkit-Blender-5.2/releases). Download the extension ZIP from the release assets and install it through Blender's **Install from Disk** menu. Restart Blender after replacing an older version.
+The built-in updater checks [this repository's public releases](https://github.com/Fynn9563/Avatar-Toolkit-Blender-5.2/releases) without a GitHub login. You can also download the extension ZIP from the release assets and install it through Blender's **Install from Disk** menu. Restart Blender after replacing an older version.
 
 ## Features
 

@@ -1,4 +1,4 @@
-"""Run feature suite plus file-format and private updater integration tests."""
+"""Run feature suite plus file-format and public updater integration tests."""
 import pathlib
 import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -6,28 +6,30 @@ source = (ROOT / 'tests/blender_full_suite.py').read_text(encoding='utf-8')
 features, finish = source.split('# Inventory all registered operators.', 1)
 exec(compile(features, str(ROOT / 'tests/blender_full_suite.py'), 'exec'))
 
-@case('Private updater release selection and credential handling')
+@case('Public updater release selection and anonymous requests')
 def updater_releases(arm, mesh, props):
     import io
     from unittest.mock import patch
     from avatar_toolkit.core import updater
     releases = [
-        {'tag_name':'v0.5.6', 'assets':[{'name':'avatar_toolkit-0.5.6.zip','url':'https://api.github.com/repos/test/releases/assets/1'}]},
-        {'tag_name':'0.5.99', 'prerelease':True, 'assets':[]},
-        {'tag_name':'0.5.7-beta', 'assets':[]},
-        {'tag_name':'0.6.0', 'assets':[]},
-        {'tag_name':'0.5.8', 'assets':[]}]
-    with patch.object(updater, '_open_github', return_value=io.BytesIO(json.dumps(releases).encode())), patch.object(updater, 'get_current_version', return_value='0.5.5'):
+        {'tag_name':'v0.6.1', 'assets':[{'name':'avatar_toolkit-0.6.1.zip','url':'https://api.github.com/repos/test/releases/assets/1'}]},
+        {'tag_name':'0.6.99', 'prerelease':True, 'assets':[]},
+        {'tag_name':'0.6.2-beta', 'assets':[]},
+        {'tag_name':'0.7.0', 'assets':[]},
+        {'tag_name':'0.5.7', 'assets':[{'name':'avatar_toolkit-0.5.7.zip','url':'https://api.github.com/repos/test/releases/assets/2'}]},
+        {'tag_name':'0.6.2', 'assets':[]}]
+    with patch.object(updater, '_open_github', return_value=io.BytesIO(json.dumps(releases).encode())), patch.object(updater, 'get_current_version', return_value='0.6.0'):
         assert updater.get_github_releases()
-        assert list(updater.version_list) == ['v0.5.6']
+        assert list(updater.version_list) == ['v0.6.1']
         assert updater.check_for_update_available()
     with patch.dict(updater.os.environ, {'GH_TOKEN':'test-token'}):
-        assert updater._github_headers()['Authorization'] == 'Bearer test-token'
+        assert 'Authorization' not in updater._github_headers()
+        assert 'Authorization' not in updater._github_headers(asset=True)
     from urllib.request import Request
     redirected = updater._SafeRedirect().redirect_request(Request('https://api.github.com/asset', headers={'Authorization':'Bearer secret'}), None,302,'',{},'https://release-assets.githubusercontent.com/file')
     assert redirected.get_header('Authorization') is None
     captured = []
-    props.avatar_toolkit_updater_version_list = 'v0.5.6'
+    props.avatar_toolkit_updater_version_list = 'v0.6.1'
     with patch.object(updater, 'download_file', side_effect=lambda url: captured.append(url) or True):
         assert updater.update_now(latest=False)
     assert len(captured) == 1
@@ -42,7 +44,7 @@ def updater_install(arm, mesh, props):
     (destination / '__init__.py').write_text('old')
     (destination / 'user-file.txt').write_text('preserve')
     archive = OUT / 'update-test.zip'
-    manifest = 'id = "avatar_toolkit"\nversion = "0.5.6"\nblender_version_min = "5.0.0"\nblender_version_max = "5.3.0"\n'
+    manifest = 'id = "avatar_toolkit"\nversion = "0.6.1"\nblender_version_min = "5.0.0"\nblender_version_max = "5.3.0"\n'
     def package(extra=None):
         with zipfile.ZipFile(archive, 'w') as z:
             z.writestr('blender_manifest.toml', manifest)
@@ -64,7 +66,7 @@ def updater_install(arm, mesh, props):
         except OSError: pass
         else: raise AssertionError('Expected install failure')
     assert (destination / '__init__.py').read_text() == 'old'
-    assert updater.install_update(archive,destination) == '0.5.6'
+    assert updater.install_update(archive,destination) == '0.6.1'
     assert (destination / '__init__.py').read_text() == 'new'
     assert (destination / 'user-file.txt').read_text() == 'preserve'
 
