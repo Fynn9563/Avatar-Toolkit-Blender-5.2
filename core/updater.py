@@ -390,7 +390,6 @@ def draw_updater_panel(context: bpy.types.Context, layout: bpy.types.UILayout) -
 
     if update_error:
         col.label(text=update_error, icon='ERROR')
-    col.label(text='Private repo: gh auth login or GH_TOKEN', icon='LOCKED')
 
     # Current version info
     col.separator()
