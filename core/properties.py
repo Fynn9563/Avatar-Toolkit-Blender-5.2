@@ -104,39 +104,58 @@ def get_mesh_objects(self, context):
     
     return result
 
+def merge_armature_poll(self, obj):
+    return obj.type == 'ARMATURE'
+
+
+def update_merge_destination(self, context):
+    from ..functions.custom_tools.armature_merging import suggested_hips
+    obj = self.merge_destination
+    name = obj.name if obj else ''
+    if self.merge_armature_into != name:
+        self.merge_armature_into = name
+    if obj and self.merge_attach_bone not in obj.data.bones:
+        self.merge_attach_bone = suggested_hips(obj)
+
+
+def update_merge_source(self, context):
+    name = self.merge_source.name if self.merge_source else ''
+    if self.merge_armature != name:
+        self.merge_armature = name
+
+
 def auto_populate_merge_armatures(context: Context) -> None:
-    """Auto-populate merge armature fields when there are 2+ armatures"""
-    armatures = [obj for obj in bpy.data.objects if obj.type == 'ARMATURE']
-    
-    if len(armatures) >= 2:
-        toolkit = context.scene.avatar_toolkit
-        
-        if not toolkit.merge_armature_into and not toolkit.merge_armature:
-            toolkit.merge_armature_into = armatures[0].name
-            toolkit.merge_armature = armatures[1].name
-            logger.debug(f"Auto-populated merge armatures: {armatures[0].name} <- {armatures[1].name}")
+    """Only choose defaults when exactly two scene rigs make the choice unambiguous."""
+    if not hasattr(context.scene, 'avatar_toolkit'):
+        return
+    from ..functions.custom_tools.armature_merging import resolve_armature
+    toolkit = context.scene.avatar_toolkit
+    if not toolkit.merge_destination:
+        legacy = resolve_armature(toolkit.merge_armature_into, context)
+        if legacy: toolkit.merge_destination = legacy
+    if not toolkit.merge_source:
+        legacy = resolve_armature(toolkit.merge_armature, context)
+        if legacy: toolkit.merge_source = legacy
+    armatures = [obj for obj in context.scene.objects if obj.type == 'ARMATURE']
+    if len(armatures) == 2:
+        if not toolkit.merge_destination:
+            toolkit.merge_destination = next(obj for obj in armatures if obj != toolkit.merge_source)
+        if not toolkit.merge_source:
+            toolkit.merge_source = next(obj for obj in armatures if obj != toolkit.merge_destination)
 
-        elif toolkit.merge_armature_into and not toolkit.merge_armature:
-            for armature in armatures:
-                if armature.name != toolkit.merge_armature_into:
-                    toolkit.merge_armature = armature.name
-                    logger.debug(f"Auto-populated merge_armature: {armature.name}")
-                    break
-
-        elif not toolkit.merge_armature_into and toolkit.merge_armature:
-            for armature in armatures:
-                if armature.name != toolkit.merge_armature:
-                    toolkit.merge_armature_into = armature.name
-                    logger.debug(f"Auto-populated merge_armature_into: {armature.name}")
-                    break
 
 def update_merge_armature_into(self: PropertyGroup, context: Context) -> None:
-    """Update function for merge_armature_into property"""
-    auto_populate_merge_armatures(context)
+    from ..functions.custom_tools.armature_merging import resolve_armature
+    obj = resolve_armature(self.merge_armature_into, context)
+    if self.merge_destination != obj:
+        self.merge_destination = obj
+
 
 def update_merge_armature(self: PropertyGroup, context: Context) -> None:
-    """Update function for merge_armature property"""
-    auto_populate_merge_armatures(context)
+    from ..functions.custom_tools.armature_merging import resolve_armature
+    obj = resolve_armature(self.merge_armature, context)
+    if self.merge_source != obj:
+        self.merge_source = obj
 
 @bpy.app.handlers.persistent
 def depsgraph_update_handler(scene: Scene, depsgraph) -> None:
@@ -579,6 +598,14 @@ class AvatarToolkitSceneProperties(PropertyGroup):
         default='ARMATURE'
     )
 
+    merge_destination: PointerProperty(
+        type=Object, name='Destination Armature', poll=merge_armature_poll, update=update_merge_destination)
+    merge_source: PointerProperty(
+        type=Object, name='Source Armature', poll=merge_armature_poll, update=update_merge_source)
+    merge_attach_roots: BoolProperty(
+        name='Attach Source Roots', description='Parent added source root bones to a destination bone', default=True)
+    merge_attach_bone: StringProperty(name='Attach To', description='Destination bone for source roots; Hips is suggested when unambiguous')
+
     merge_armature_into: StringProperty(
         name=t('MergeArmature.into'),
         description=t('MergeArmature.into_desc'),
@@ -608,19 +635,19 @@ class AvatarToolkitSceneProperties(PropertyGroup):
     apply_transforms: BoolProperty(
         name=t('MergeArmature.apply_transforms'),
         description=t('MergeArmature.apply_transforms_desc'),
-        default=True
+        default=False
     )
 
     join_meshes: BoolProperty(
         name=t('MergeArmature.join_meshes'),
         description=t('MergeArmature.join_meshes_desc'),
-        default=True
+        default=False
     )
 
     remove_zero_weights: BoolProperty(
-        name=t('MergeArmature.remove_zero_weights'),
-        description=t('MergeArmature.remove_zero_weights_desc'),
-        default=True
+        name='Remove Empty Vertex Groups',
+        description='Remove groups with no nonzero weights; preserve all bones',
+        default=False
     )
 
     preserve_parent_bones: BoolProperty(
@@ -660,7 +687,7 @@ class AvatarToolkitSceneProperties(PropertyGroup):
     cleanup_shape_keys: BoolProperty(
         name=t('MergeArmature.cleanup_shape_keys'),
         description=t('MergeArmature.cleanup_shape_keys_desc'),
-        default=True
+        default=False
     )
       
     merge_twist_bones: BoolProperty(

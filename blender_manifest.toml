@@ -3,7 +3,7 @@
 schema_version = "1.0.0"
 
 id = "avatar_toolkit"
-version = "0.5.7"
+version = "0.5.8"
 name = "Avatar Toolkit"
 tagline = "Import and optimize avatars for VRChat and Resonite"
 

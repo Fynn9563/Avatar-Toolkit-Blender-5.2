@@ -4,7 +4,7 @@ from bpy.types import Panel, Context, UILayout, Operator, Event, WindowManager
 from .main_panel import AvatarToolKit_PT_AvatarToolkitPanel, CATEGORY_NAME
 from .panel_layout import get_panel_order, should_open_by_default
 from ..functions.custom_tools.mesh_attachment import AvatarToolkit_OT_AttachMesh
-from ..functions.custom_tools.armature_merging import AvatarToolkit_OT_MergeArmature
+from ..functions.custom_tools.armature_merging import AvatarToolkit_OT_MergeArmature, resolve_armature
 from ..core.translations import t
 from ..core.common import (
     get_active_armature,
@@ -27,7 +27,9 @@ class AvatarToolkit_OT_SearchMergeArmatureInto(Operator):
     )
 
     def execute(self, context: Context) -> Set[str]:
-        context.scene.avatar_toolkit.merge_armature_into = self.search_merge_armature_into_enum
+        obj = resolve_armature(self.search_merge_armature_into_enum, context)
+        if not obj: return {'CANCELLED'}
+        context.scene.avatar_toolkit.merge_destination = obj
         return {'FINISHED'}
 
     def invoke(self, context: Context, event: Event) -> Set[str]:
@@ -48,7 +50,9 @@ class AvatarToolkit_OT_SearchMergeArmature(Operator):
     )
 
     def execute(self, context: Context) -> Set[str]:
-        context.scene.avatar_toolkit.merge_armature = self.search_merge_armature_enum
+        obj = resolve_armature(self.search_merge_armature_enum, context)
+        if not obj: return {'CANCELLED'}
+        context.scene.avatar_toolkit.merge_source = obj
         return {'FINISHED'}
 
     def invoke(self, context: Context, event: Event) -> Set[str]:
@@ -140,56 +144,25 @@ class AvatarToolKit_PT_CustomPanel(Panel):
         """Draw the armature merging tools section"""
         toolkit = context.scene.avatar_toolkit
         
-        # Merge Settings Box
-        settings_box: UILayout = layout.box()
-        col: UILayout = settings_box.column(align=True)
-        col.label(text=t('MergeArmature.label'), icon='ARMATURE_DATA')
-        col.separator(factor=0.5)
-        
-        if len(get_armature_list(context)) <= 1:
-            col.label(text=t('MergeArmature.warn_two'), icon='INFO')
-            return
-
-        # Options Box with better spacing
-        options_box: UILayout = layout.box()
-        col: UILayout = options_box.column(align=True)
-        col.label(text=t('MergeArmature.options'), icon='SETTINGS')
-        col.separator(factor=0.5)
-        
-        # Group related options together
-        transform_col: UILayout = col.column(align=True)
-        transform_col.prop(toolkit, "apply_transforms")
-        
-        col.separator(factor=0.5)
-        
-        cleanup_col: UILayout = col.column(align=True)
-        cleanup_col.prop(toolkit, "join_meshes")
-        cleanup_col.prop(toolkit, "remove_zero_weights")
-        cleanup_col.prop(toolkit, "cleanup_shape_keys")
-
-        # Selection Box with consistent styling
-        selection_box: UILayout = layout.box()
-        col: UILayout = selection_box.column(align=True)
-        col.label(text=t('CustomPanel.select_armature'), icon='BONE_DATA')
-        col.separator(factor=0.5)
-        
-        # Armature selection with better alignment
-        row: UILayout = col.row(align=True)
-        row.label(text=t('MergeArmature.into'), icon='ARMATURE_DATA')
-        row.operator(AvatarToolkit_OT_SearchMergeArmatureInto.bl_idname,
-                    text=toolkit.merge_armature_into)
-
-        row: UILayout = col.row(align=True)
-        row.label(text=t('MergeArmature.from'), icon='ARMATURE_DATA')
-        row.operator(AvatarToolkit_OT_SearchMergeArmature.bl_idname,
-                    text=toolkit.merge_armature)
-
-        # Merge button with emphasis
-        merge_box: UILayout = layout.box()
-        col: UILayout = merge_box.column(align=True)
-        row: UILayout = col.row(align=True)
+        box = layout.box()
+        col = box.column(align=True)
+        col.prop(toolkit, 'merge_destination')
+        col.prop(toolkit, 'merge_source')
+        col.separator()
+        col.prop(toolkit, 'merge_attach_roots')
+        if toolkit.merge_attach_roots and toolkit.merge_destination:
+            col.prop_search(toolkit, 'merge_attach_bone', toolkit.merge_destination.data, 'bones')
+            if not toolkit.merge_attach_bone:
+                col.label(text='Choose an attachment bone, or leave roots unparented.', icon='INFO')
+        box = layout.box()
+        col = box.column(align=True)
+        col.label(text='Optional Cleanup', icon='SETTINGS')
+        col.prop(toolkit, 'join_meshes')
+        col.prop(toolkit, 'remove_zero_weights')
+        col.prop(toolkit, 'cleanup_shape_keys')
+        row = layout.row()
         row.scale_y = 1.5
-        row.operator(AvatarToolkit_OT_MergeArmature.bl_idname, icon='ARMATURE_DATA')
+        row.operator(AvatarToolkit_OT_MergeArmature.bl_idname, text='Preview Merge', icon='ARMATURE_DATA')
 
     def draw_mesh_tools(self, layout: UILayout, context: Context) -> None:
         """Draw the mesh attachment tools section"""

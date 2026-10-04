@@ -2,13 +2,13 @@
 
 A maintained fork of Avatar Toolkit for preparing avatars for VRChat, Resonite, and similar platforms. This fork contains Blender 5.2 compatibility fixes and downloads updates from this repository.
 
-**Current release:** 0.5.7
+**Current release:** 0.5.8
 
 **Target Blender version:** 5.2.2 LTS
 
 ## Installation
 
-1. Open [Releases](https://github.com/Fynn9563/Avatar-Toolkit-Blender-5.2/releases) and download `avatar_toolkit-0.5.7.zip` from the release assets. Use the extension ZIP rather than GitHub's source-code ZIP.
+1. Open [Releases](https://github.com/Fynn9563/Avatar-Toolkit-Blender-5.2/releases) and download `avatar_toolkit-0.5.8.zip` from the release assets. Use the extension ZIP rather than GitHub's source-code ZIP.
 2. In Blender, open **Edit > Preferences > Get Extensions** and choose **Install from Disk** from the menu.
 3. Select the ZIP, enable Avatar Toolkit, and restart Blender if replacing an older installation.
 4. Open the **Avatar Toolkit** tab in the 3D Viewport sidebar (`N`).
@@ -26,6 +26,7 @@ Releases are published in [this repository](https://github.com/Fynn9563/Avatar-T
 - Mesh joining, separation, attachment, transforms, and shape-key utilities.
 - Viseme generation, eye tracking, and blink/lowerlid setup.
 - Armature validation, bone cleanup and merging, digitigrade conversion, and pose tools.
+- Armature merge preview with explicit source and destination selection, compatible bone matching, conflict renaming, and accessory root attachment to Hips or another chosen bone.
 - Rigify, VRM, and Resonite bone conversion.
 - Material consolidation, texture atlases, UV alignment, and seam tools.
 - Offline dictionary translation, with optional external translation services.
