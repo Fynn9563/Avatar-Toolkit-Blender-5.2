@@ -75,6 +75,36 @@ jobs:
               summary.write(f'path={output.relative_to(root).as_posix()}\n')
           print(f'Built {output.name} with {len(files)} files')
 
+      - name: Read release notes from changelog
+        id: notes
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: python
+        run: |
+          import os
+          import pathlib
+          import re
+
+          version = os.environ['RELEASE_TAG'].removeprefix('v')
+          lines = pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8').splitlines()
+          headings = []
+          for index, line in enumerate(lines):
+              match = re.match(r'^##\s+\[?v?(\d+\.\d+\.\d+)\]?(?:\s|$)', line)
+              if match and match.group(1) == version:
+                  headings.append(index)
+          if len(headings) != 1:
+              raise SystemExit(f'Expected exactly one CHANGELOG.md entry for {version}; found {len(headings)}.')
+          start = headings[0] + 1
+          end = next((index for index in range(start, len(lines))
+                      if lines[index].startswith('## ')), len(lines))
+          notes = '\n'.join(lines[start:end]).strip()
+          if not notes:
+              raise SystemExit(f'CHANGELOG.md entry for {version} is empty.')
+          output = pathlib.Path(os.environ['RUNNER_TEMP']) / 'release-notes.md'
+          output.write_text(notes + '\n', encoding='utf-8')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as summary:
+              summary.write(f'path={output.as_posix()}\n')
+
       - name: Install Blender 5.2.2 LTS
         shell: bash
         run: |
@@ -108,11 +138,13 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.ref_name }}
           PACKAGE_PATH: ${{ steps.package.outputs.path }}
+          NOTES_PATH: ${{ steps.notes.outputs.path }}
         shell: bash
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" --notes-file "$NOTES_PATH"
             gh release upload "$RELEASE_TAG" "$PACKAGE_PATH" --clobber
           else
             gh release create "$RELEASE_TAG" "$PACKAGE_PATH" \
-              --verify-tag --title "Avatar Toolkit $RELEASE_TAG" --generate-notes
+              --verify-tag --title "Avatar Toolkit $RELEASE_TAG" --notes-file "$NOTES_PATH"
           fi
