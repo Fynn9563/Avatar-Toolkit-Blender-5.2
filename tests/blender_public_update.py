@@ -1,4 +1,7 @@
-"""Live anonymous public-release download/install test in an isolated directory."""
+"""Public updater integration test; CI can supply an unpublished candidate ZIP."""
+import io
+import json
+import os
 import importlib.util
 import pathlib
 import sys
@@ -11,10 +14,26 @@ addon=importlib.util.module_from_spec(spec); sys.modules[spec.name]=addon; spec.
 from avatar_toolkit.core import updater, addon_preferences
 addon_preferences.PREFERENCES_FILE=str(OUT/'public-update-preferences.json')
 pathlib.Path(addon_preferences.PREFERENCES_FILE).write_text('{}')
+expected=tomllib.loads((ROOT/'blender_manifest.toml').read_text())['version']
+candidate = os.environ.get('AVATAR_TOOLKIT_TEST_PACKAGE')
+if candidate:
+    from unittest.mock import patch
+    candidate = pathlib.Path(candidate).resolve()
+    asset_url = f'https://api.github.com/repos/{updater.GITHUB_REPO}/releases/assets/1'
+    releases_url = f'https://api.github.com/repos/{updater.GITHUB_REPO}/releases?per_page=100'
+    releases = [{'tag_name': expected, 'assets': [
+        {'name': f'avatar_toolkit-{expected}.zip', 'url': asset_url}]}]
+    def candidate_response(url, asset=False):
+        if url == releases_url and not asset:
+            return io.BytesIO(json.dumps(releases).encode())
+        if url == asset_url and asset:
+            return candidate.open('rb')
+        raise AssertionError(f'Unexpected updater request: {url}, asset={asset}')
+    candidate_patch = patch.object(updater, '_open_github', side_effect=candidate_response)
+    candidate_patch.start()
 assert updater.get_github_releases(), updater.update_error
 assert 'Authorization' not in updater._github_headers()
 assert 'Authorization' not in updater._github_headers(asset=True)
-expected=tomllib.loads((ROOT/'blender_manifest.toml').read_text())['version']
 assert expected in updater.version_list, list(updater.version_list)
 assert not updater.check_for_update_available(), 'Published version should equal current installation'
 target=OUT/'public-update-target'; target.mkdir(exist_ok=True)
@@ -29,4 +48,6 @@ assert updater.GITHUB_REPO in (target/'core/updater.py').read_text()
 assert (target/'user-file.txt').read_text()=='preserved'
 assert not (target/'.git').exists()
 addon.unregister()
-print('LIVE ANONYMOUS UPDATE CHECK, DOWNLOAD AND ISOLATED INSTALL PASSED',expected)
+if candidate:
+    candidate_patch.stop()
+print('PUBLIC UPDATE CHECK, DOWNLOAD AND ISOLATED INSTALL PASSED',expected)

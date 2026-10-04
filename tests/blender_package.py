@@ -6,16 +6,24 @@ import types
 import zipfile
 import tomllib
 import bpy
+import platform
+import os
 
 root = pathlib.Path(__file__).resolve().parents[1]
 package_root = root / '.validation' / 'package'
-with zipfile.ZipFile(root / f"avatar_toolkit-{tomllib.loads((root / 'blender_manifest.toml').read_text())['version']}.zip") as archive:
+candidate = os.environ.get('AVATAR_TOOLKIT_TEST_PACKAGE')
+archive_path = pathlib.Path(candidate) if candidate else root / f"avatar_toolkit-{tomllib.loads((root / 'blender_manifest.toml').read_text())['version']}.zip"
+with zipfile.ZipFile(archive_path) as archive:
     names = archive.namelist()
     assert 'blender_manifest.toml' in names
     assert not any('.validation/' in n or '__pycache__/' in n or n.endswith('.zip') for n in names)
     archive.extractall(package_root)
 wheel_root = root / '.validation' / 'wheel'
-with zipfile.ZipFile(package_root / 'wheels' / 'lz4-4.4.5-cp313-cp313-win_amd64.whl') as archive:
+manifest = tomllib.loads((package_root / 'blender_manifest.toml').read_text())
+wheel_tag = {'Windows': 'win_amd64', 'Linux': 'manylinux', 'Darwin': 'macosx'}[platform.system()]
+wheel = next(path for path in manifest['wheels'] if wheel_tag in path
+             and (platform.system() != 'Darwin' or platform.machine() in path))
+with zipfile.ZipFile(package_root / wheel) as archive:
     archive.extractall(wheel_root)
 sys.path.insert(0, str(wheel_root))
 import lz4.frame

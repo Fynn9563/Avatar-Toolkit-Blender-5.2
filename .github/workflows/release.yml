@@ -1,0 +1,118 @@
+name: Build release ZIP
+
+on:
+  push:
+    tags:
+      - '**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Build installable extension ZIP
+        id: package
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: python
+        run: |
+          import fnmatch
+          import os
+          import pathlib
+          import subprocess
+          import tomllib
+          import zipfile
+
+          root = pathlib.Path.cwd()
+          manifest = tomllib.loads((root / 'blender_manifest.toml').read_text())
+          version = manifest['version']
+          tag = os.environ['RELEASE_TAG']
+          if tag not in (version, f'v{version}'):
+              raise SystemExit(f'Tag {tag!r} must match manifest version {version!r} (optional v prefix).')
+
+          patterns = manifest['build']['paths_exclude_pattern']
+          def excluded(name):
+              parts = pathlib.PurePosixPath(name).parts
+              candidates = [name, *parts]
+              candidates += ['/'.join(parts[:i]) + '/' for i in range(1, len(parts))]
+              return any(fnmatch.fnmatchcase(candidate, pattern)
+                         for candidate in candidates for pattern in patterns)
+
+          tracked = subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')
+          files = sorted(name for name in tracked if name and not excluded(name))
+          required = {'blender_manifest.toml', '__init__.py', 'LICENSE'}
+          required.update(path.removeprefix('./') for path in manifest.get('wheels', []))
+          missing = required.difference(files)
+          if missing:
+              raise SystemExit(f'Missing package files: {sorted(missing)}')
+
+          output = root / 'dist' / f"{manifest['id']}-{version}.zip"
+          output.parent.mkdir(exist_ok=True)
+          with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as archive:
+              for name in files:
+                  archive.write(root / name, name)
+          with zipfile.ZipFile(output) as archive:
+              if archive.testzip() is not None:
+                  raise SystemExit('ZIP integrity check failed')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as summary:
+              summary.write(f'path={output.relative_to(root).as_posix()}\n')
+          print(f'Built {output.name} with {len(files)} files')
+
+      - name: Install Blender 5.2.2 LTS
+        shell: bash
+        run: |
+          base=https://download.blender.org/release/Blender5.2
+          archive=blender-5.2.2-linux-x64.tar.xz
+          curl --fail --location --retry 3 "$base/$archive" -o "$RUNNER_TEMP/$archive"
+          curl --fail --location --retry 3 "$base/blender-5.2.2.sha256" -o "$RUNNER_TEMP/blender.sha256"
+          cd "$RUNNER_TEMP"
+          grep " $archive\$" blender.sha256 | sha256sum --check --strict
+          tar -xf "$archive"
+          echo "$RUNNER_TEMP/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+
+      - name: Run all Blender tests
+        env:
+          PACKAGE_PATH: ${{ steps.package.outputs.path }}
+        shell: bash
+        run: |
+          mkdir -p .validation
+          export AVATAR_TOOLKIT_TEST_PACKAGE="$GITHUB_WORKSPACE/$PACKAGE_PATH"
+          blender --background --factory-startup --python-exit-code 1 --python tests/blender_package.py
+          # The extended suite executes the full suite and UI fixtures.
+          for suite in compatibility extended_suite armature_merge humanoid_mapping public_update; do
+            blender --background --factory-startup --python-exit-code 1 \
+              --python-expr "import sys; sys.path.insert(0, '.validation/wheel')" \
+              --python "tests/blender_$suite.py"
+          done
+
+      - name: Attach ZIP to GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          PACKAGE_PATH: ${{ steps.package.outputs.path }}
+        shell: bash
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "$PACKAGE_PATH" --clobber
+          else
+            gh release create "$RELEASE_TAG" "$PACKAGE_PATH" \
+              --verify-tag --title "Avatar Toolkit $RELEASE_TAG" --generate-notes
+          fi
